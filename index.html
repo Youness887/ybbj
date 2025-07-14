@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper & Money Maker Bot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <h1>BotHub</h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#bots">Bots</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h2>Professional Web Scraping & Money Making Bots</h2>
+                <p>Automate your business processes and maximize your profits with our advanced bot solutions</p>
+                <div class="cta-buttons">
+                    <button class="btn primary">Get Started</button>
+                    <button class="btn secondary">Learn More</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <h2>Why Choose Our Bots?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="icon">🤖</div>
+                        <h3>Automated Scraping</h3>
+                        <p>Extract data from websites automatically with our powerful web scraping technology</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">💰</div>
+                        <h3>Money Making</h3>
+                        <p>Generate revenue through automated trading, affiliate marketing, and lead generation</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h3>Data Analysis</h3>
+                        <p>Process and analyze scraped data to identify profitable opportunities</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">⚡</div>
+                        <h3>Real-time Processing</h3>
+                        <p>Get instant results with our high-speed data processing capabilities</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="bots" class="bots-section">
+            <div class="container">
+                <h2>Our Bot Solutions</h2>
+                <div class="bots-grid">
+                    <div class="bot-card">
+                        <h3>Web Scraper Bot</h3>
+                        <p>Extract data from any website including:</p>
+                        <ul>
+                            <li>Business leads and prospects</li>
+                            <li>Product information and prices</li>
+                            <li>Real estate listings</li>
+                            <li>Job postings</li>
+                        </ul>
+                        <button class="btn primary">Launch Bot</button>
+                    </div>
+                    <div class="bot-card">
+                        <h3>Money Maker Bot</h3>
+                        <p>Automated revenue generation through:</p>
+                        <ul>
+                            <li>Lead generation and sales</li>
+                            <li>Price monitoring and arbitrage</li>
+                            <li>Affiliate marketing automation</li>
+                            <li>Email marketing campaigns</li>
+                        </ul>
+                        <button class="btn primary">Launch Bot</button>
+                    </div>
+                    <div class="bot-card">
+                        <h3>Prospect Hunter</h3>
+                        <p>Find and qualify potential customers:</p>
+                        <ul>
+                            <li>Local business prospects</li>
+                            <li>Amazon seller prospects</li>
+                            <li>High-priority leads</li>
+                            <li>Personalized outreach</li>
+                        </ul>
+                        <button class="btn primary">Launch Bot</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" class="stats">
+            <div class="container">
+                <h2>Performance Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>10,000+</h3>
+                        <p>Data Points Scraped</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>$50,000+</h3>
+                        <p>Revenue Generated</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Active Prospects</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>99.9%</h3>
+                        <p>Uptime</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Get Started Today</h2>
+                <p>Ready to automate your business and increase your profits?</p>
+                <div class="contact-form">
+                    <form>
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea placeholder="Tell us about your project" required></textarea>
+                        <button type="submit" class="btn primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 BotHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple JavaScript for smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Form submission handler
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+        });
+    </script>
+</body>
+</html>

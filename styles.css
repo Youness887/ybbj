@@ -1,0 +1,156 @@
+/* Styles for Web Scraper & Money Maker Bot */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.logo {
+    float: left;
+}
+
+.nav-links {
+    list-style-type: none;
+    float: right;
+}
+
+.nav-links li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero {
+    background-color: #f4f4f4;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.hero h2 {
+    margin-bottom: 20px;
+}
+
+.cta-buttons .btn {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn.secondary {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #333;
+}
+
+/* Features Section */
+.features {
+    background-color: #fff;
+    padding: 50px 0;
+}
+
+.features-grid {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.feature-card {
+    width: 200px;
+    margin: 20px;
+    text-align: center;
+}
+
+/* Bots Section */
+.bots-section {
+    background-color: #f4f4f4;
+    padding: 50px 0;
+}
+
+.bots-grid {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.bot-card {
+    width: 300px;
+    margin: 20px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats Section */
+.stats {
+    background-color: #fff;
+    padding: 50px 0;
+}
+
+.stats-grid {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.stat-item {
+    width: 150px;
+}
+
+/* Contact Section */
+.contact {
+    background-color: #f4f4f4;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.contact-form {
+    margin-top: 30px;
+}
+
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+}
+
+.contact-form button {
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem 0;
+    text-align: center;
+}
