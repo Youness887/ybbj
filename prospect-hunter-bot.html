@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prospect Hunter Bot - BotHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .bot-page {
+            padding: 2rem 0;
+            min-height: 80vh;
+        }
+        .bot-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .bot-config {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        .config-section {
+            margin-bottom: 2rem;
+        }
+        .config-section h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .bot-controls {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .status-panel {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-stopped { background-color: #dc3545; }
+        .status-running { background-color: #28a745; }
+        .status-paused { background-color: #ffc107; }
+        .results-area {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .prospect-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container">
+                <div class="logo">
+                    <h1><a href="index.html" style="color: #fff; text-decoration: none;">BotHub</a></h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="web-scraper-bot.html">Web Scraper</a></li>
+                    <li><a href="money-maker-bot.html">Money Maker</a></li>
+                    <li><a href="prospect-hunter-bot.html">Prospect Hunter</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="bot-page">
+        <div class="container">
+            <div class="bot-header">
+                <h1>🔍 Prospect Hunter Bot</h1>
+                <p>Find high-quality prospects and leads with precision targeting and analysis</p>
+            </div>
+
+            <div class="prospect-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="leads-found">0</div>
+                    <div>Leads Found</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="qualified">0</div>
+                    <div>Qualified Prospects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="follow-up">0</div>
+                    <div>Follow-up Actions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="conversion-rate">0%</div>
+                    <div>Conversion Rate</div>
+                </div>
+            </div>
+
+            <div class="bot-config">
+                <div class="config-section">
+                    <h3>Prospecting Strategy</h3>
+                    <div class="form-group">
+                        <label for="industry-focus">Industry Focus:</label>
+                        <select id="industry-focus">
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance</option>
+                            <option value="retail">Retail</option>
+                            <option value="education">Education</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-geo">Target Geography:</label>
+                        <input type="text" id="target-geo" placeholder="e.g., United States, Europe, Asia">
+                    </div>
+                    <div class="form-group">
+                        <label for="prospect-criteria">Prospect Criteria:</label>
+                        <textarea id="prospect-criteria" rows="3" placeholder="Enter criteria for ideal prospects">
+                        </textarea>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>Qualification Settings</h3>
+                    <div class="form-group">
+                        <label for="qualification-score">Qualification Score Threshold:</label>
+                        <input type="number" id="qualification-score" value="80" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-prospects">Maximum Prospects to Analyze:</label>
+                        <input type="number" id="max-prospects" value="100" min="10" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-method">Preferred Contact Method:</label>
+                        <select id="contact-method">
+                            <option value="email">Email</option>
+                            <option value="phone">Phone</option>
+                            <option value="social-media">Social Media</option>
+                            <option value="in-person">In-Person</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bot-controls">
+                <button id="start-bot" class="btn primary">Start Prospecting</button>
+                <button id="pause-bot" class="btn secondary" disabled>Pause</button>
+                <button id="stop-bot" class="btn secondary" disabled>Stop</button>
+                <button id="download-results" class="btn primary" disabled>Download Report</button>
+            </div>
+
+            <div class="status-panel">
+                <h3>Bot Status</h3>
+                <p><span id="status-indicator" class="status-indicator status-stopped"></span><span id="status-text">Stopped</span></p>
+                <p>Prospecting activities: <span id="activities-conducted">0</span></p>
+                <p>Current conversion rate: <span id="current-conversion-rate">0%</span></p>
+            </div>
+
+            <div class="results-area">
+                <h3>Prospect Activity</h3>
+                <div id="results-container">
+                    <p>No activity yet. Start the bot to find prospects.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 BotHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/bot-integration.js"></script>
+    <script src="js/prospect-hunter-bot.js"></script>
+</body>
+</html>
