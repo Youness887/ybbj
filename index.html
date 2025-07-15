@@ -151,13 +151,37 @@
     </footer>
 
     <script>
-        // Simple JavaScript for smooth scrolling
+        // Enhanced JavaScript for smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 document.querySelector(this.getAttribute('href')).scrollIntoView({
                     behavior: 'smooth'
                 });
+            });
+        });
+
+        // Add loading indicator on button click
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                const loader = document.createElement('div');
+                loader.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(255, 255, 255, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 1.5rem;
+                    color: var(--primary-color);
+                    z-index: 1001;
+                    content: 'Loading...';
+                `;
+                document.body.appendChild(loader);
+                setTimeout(() => loader.remove(), 2000);
             });
         });
 
