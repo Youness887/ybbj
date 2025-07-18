@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Bot Services - TikTok, Web Scraping, Trading & Content Generation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .pricing-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .pricing-card:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+        .chat-bot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50" x-data="{ 
+    selectedBot: null, 
+    paymentModal: false, 
+    selectedPlan: null,
+    chatOpen: false,
+    testimonialIndex: 0,
+    testimonials: [
+        { name: 'Sarah Johnson', role: 'Marketing Director', text: 'The TikTok bot helped us grow our followers by 300% in just 2 months!', rating: 5 },
+        { name: 'Mike Chen', role: 'E-commerce Owner', text: 'Web scraping bot saved us 20 hours per week on data collection.', rating: 5 },
+        { name: 'Alex Rodriguez', role: 'Day Trader', text: 'The trading bot has consistently outperformed my manual trading.', rating: 5 }
+    ]
+}">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-gray-800">
+                            <i class="fas fa-robot text-blue-600"></i>
+                            AI Bot Services
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#services" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                    <a href="#pricing" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Pricing</a>
+                    <a href="#testimonials" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Testimonials</a>
+                    <a href="#contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Supercharge Your Business with AI Bots
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                Professional AI-powered bots for TikTok growth, web scraping, trading automation, and content generation
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button @click="document.getElementById('services').scrollIntoView()" class="bg-white text-blue-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-gray-100 transition">
+                    Explore Services
+                </button>
+                <button @click="paymentModal = true" class="border-2 border-white text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-white hover:text-blue-600 transition">
+                    Start Free Trial
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Our AI Bot Services</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Choose from our suite of powerful AI bots designed to automate and optimize your business processes
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- TikTok Bot -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover transition-all duration-300">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fab fa-tiktok text-2xl text-pink-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">TikTok Money Maker Bot</h3>
+                        <p class="text-gray-600 mb-4">Automate your TikTok growth with AI-powered content creation and engagement</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-2">
+                            <li>• Auto content generation</li>
+                            <li>• Smart engagement</li>
+                            <li>• Growth analytics</li>
+                            <li>• Hashtag optimization</li>
+                        </ul>
+                        <button @click="selectedBot = 'tiktok', paymentModal = true" class="w-full bg-pink-600 text-white py-2 rounded-md hover:bg-pink-700 transition">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Web Scraper Bot -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover transition-all duration-300">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-spider text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Web Scraper Bot</h3>
+                        <p class="text-gray-600 mb-4">Extract data from any website with intelligent scraping algorithms</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-2">
+                            <li>• Multi-site scraping</li>
+                            <li>• Data cleaning</li>
+                            <li>• Export formats</li>
+                            <li>• Proxy rotation</li>
+                        </ul>
+                        <button @click="selectedBot = 'scraper', paymentModal = true" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trading Bot -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover transition-all duration-300">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-line text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Polygon Trading Bot</h3>
+                        <p class="text-gray-600 mb-4">Automated cryptocurrency trading with advanced algorithms</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-2">
+                            <li>• DeFi protocols</li>
+                            <li>• Risk management</li>
+                            <li>• Portfolio tracking</li>
+                            <li>• Real-time alerts</li>
+                        </ul>
+                        <button @click="selectedBot = 'trading', paymentModal = true" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Generation Bot -->
+                <div class="bg-white rounded-lg shadow-lg p-6 card-hover transition-all duration-300">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-magic text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Content Autogen Tool</h3>
+                        <p class="text-gray-600 mb-4">AI-powered content creation for all your marketing needs</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-2">
+                            <li>• AI writing assistant</li>
+                            <li>• Multi-format content</li>
+                            <li>• SEO optimization</li>
+                            <li>• Brand voice training</li>
+                        </ul>
+                        <button @click="selectedBot = 'content', paymentModal = true" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Choose Your Plan</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Flexible pricing options to suit businesses of all sizes
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Starter Plan -->
+                <div class="pricing-card bg-white rounded-lg shadow-lg p-8">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Starter</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$29<span class="text-lg text-gray-500">/month</span></div>
+                        <p class="text-gray-600 mb-6">Perfect for individuals and small businesses</p>
+                        <ul class="text-left space-y-3 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 1 Bot of your choice</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 5,000 operations/month</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Email support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Basic analytics</li>
+                        </ul>
+                        <button @click="selectedPlan = 'starter', paymentModal = true" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                            Start Free Trial
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Professional Plan -->
+                <div class="pricing-card bg-white rounded-lg shadow-lg p-8 border-2 border-blue-600 relative">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Professional</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$99<span class="text-lg text-gray-500">/month</span></div>
+                        <p class="text-gray-600 mb-6">Great for growing businesses</p>
+                        <ul class="text-left space-y-3 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 3 Bots included</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 50,000 operations/month</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Priority support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Advanced analytics</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> API access</li>
+                        </ul>
+                        <button @click="selectedPlan = 'professional', paymentModal = true" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                            Start Free Trial
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card bg-white rounded-lg shadow-lg p-8">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold text-blue-600 mb-4">$299<span class="text-lg text-gray-500">/month</span></div>
+                        <p class="text-gray-600 mb-6">For large organizations</p>
+                        <ul class="text-left space-y-3 mb-8">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> All Bots included</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Unlimited operations</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> 24/7 phone support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Custom integrations</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i> Dedicated account manager</li>
+                        </ul>
+                        <button @click="selectedPlan = 'enterprise', paymentModal = true" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                            Contact Sales
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">What Our Customers Say</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Join thousands of satisfied customers who are growing their businesses with our AI bots
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto">
+                <div class="text-center" x-data="{ currentTestimonial: 0 }">
+                    <div class="mb-6">
+                        <div class="flex justify-center mb-4">
+                            <template x-for="i in 5" :key="i">
+                                <i class="fas fa-star text-yellow-400 text-xl"></i>
+                            </template>
+                        </div>
+                        <p class="text-lg text-gray-600 italic mb-4" x-text="testimonials[currentTestimonial].text"></p>
+                        <div class="flex items-center justify-center">
+                            <div class="text-center">
+                                <p class="font-semibold text-gray-800" x-text="testimonials[currentTestimonial].name"></p>
+                                <p class="text-gray-500" x-text="testimonials[currentTestimonial].role"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center space-x-2">
+                        <template x-for="(testimonial, index) in testimonials" :key="index">
+                            <button @click="currentTestimonial = index" 
+                                    class="w-3 h-3 rounded-full transition-colors duration-300"
+                                    :class="currentTestimonial === index ? 'bg-blue-600' : 'bg-gray-300'">
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Get in Touch</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Contact Information</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-blue-600 mr-3"></i>
+                            <span class="text-gray-600">support@aibotservices.com</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-phone text-blue-600 mr-3"></i>
+                            <span class="text-gray-600">+1 (555) 123-4567</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-blue-600 mr-3"></i>
+                            <span class="text-gray-600">123 AI Street, Tech City, TC 12345</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-blue-600 transition">
+                                <i class="fab fa-twitter text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-blue-600 transition">
+                                <i class="fab fa-linkedin text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-blue-600 transition">
+                                <i class="fab fa-github text-2xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                            <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">AI Bot Services</h3>
+                    <p class="text-gray-400">
+                        Empowering businesses with intelligent automation solutions.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">TikTok Bot</a></li>
+                        <li><a href="#" class="hover:text-white transition">Web Scraper</a></li>
+                        <li><a href="#" class="hover:text-white transition">Trading Bot</a></li>
+                        <li><a href="#" class="hover:text-white transition">Content Generator</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition">API Reference</a></li>
+                        <li><a href="#" class="hover:text-white transition">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 AI Bot Services. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Payment Modal -->
+    <div x-show="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" x-cloak>
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">Complete Your Purchase</h3>
+                <button @click="paymentModal = false" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">Selected Plan</h4>
+                <div class="bg-gray-100 rounded-lg p-4">
+                    <p class="font-semibold" x-text="selectedPlan ? selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1) : 'Professional'"></p>
+                    <p class="text-gray-600" x-text="selectedBot ? 'Bot: ' + selectedBot.charAt(0).toUpperCase() + selectedBot.slice(1) : 'All Bots Included'"></p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Information</label>
+                    <div id="card-element" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <!-- Stripe Elements will create form elements here -->
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button @click="paymentModal = false" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-md hover:bg-gray-400 transition">
+                        Cancel
+                    </button>
+                    <button id="submit-payment" class="flex-1 bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                        Start Trial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Bot -->
+    <div class="chat-bot" @click="chatOpen = !chatOpen">
+        <i class="fas fa-comments text-xl"></i>
+    </div>
+
+    <!-- Chat Window -->
+    <div x-show="chatOpen" class="fixed bottom-24 right-4 w-80 bg-white rounded-lg shadow-lg z-50" x-cloak>
+        <div class="bg-blue-600 text-white p-4 rounded-t-lg">
+            <div class="flex justify-between items-center">
+                <h4 class="font-semibold">AI Assistant</h4>
+                <button @click="chatOpen = false">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-4 h-64 overflow-y-auto">
+            <div class="mb-4">
+                <div class="bg-gray-100 rounded-lg p-3 mb-2">
+                    <p class="text-sm">Hello! I'm here to help you choose the right AI bot for your needs. What would you like to know?</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 border-t">
+            <div class="flex">
+                <input type="text" placeholder="Type your message..." class="flex-1 px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Stripe
+        const stripe = Stripe('pk_test_51234567890abcdef'); // Replace with your Stripe publishable key
+        const elements = stripe.elements();
+        
+        // Create card element
+        const cardElement = elements.create('card');
+        
+        // Add event listener for payment modal
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('paymentModal', () => ({
+                show: false,
+                init() {
+                    this.$watch('show', (value) => {
+                        if (value) {
+                            this.$nextTick(() => {
+                                cardElement.mount('#card-element');
+                            });
+                        }
+                    });
+                }
+            }));
+        });
+
+        // Handle form submission
+        document.getElementById('submit-payment').addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            const { token, error } = await stripe.createToken(cardElement);
+            
+            if (error) {
+                console.error('Error:', error);
+                alert('Payment failed. Please try again.');
+            } else {
+                // Send token to your server
+                console.log('Token:', token);
+                alert('Payment processed successfully! Welcome to AI Bot Services!');
+                // Close modal
+                document.dispatchEvent(new CustomEvent('payment-success'));
+            }
+        });
+
+        // Auto-rotate testimonials
+        setInterval(() => {
+            const event = new CustomEvent('rotate-testimonial');
+            document.dispatchEvent(event);
+        }, 5000);
+    </script>
+</body>
+</html>
