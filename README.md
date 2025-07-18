@@ -106,9 +106,9 @@ A comprehensive website showcasing AI-powered bot services including TikTok auto
 
 ## Contact Information
 
-- **Email**: younessjaadani@gmail.co.com
-- **Phone**: 212713933589
-- **Address**: 123 AI Street, Tech City, TC 12345
+- **Email**: jaadaniyouness@gmail.com
+- **Phone**: +212 713 933 589
+- **Address**: Morocco
 
 ## License
 
