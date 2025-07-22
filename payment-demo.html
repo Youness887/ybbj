@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System Demo - BotHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .demo-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .wallet-info {
+            background: #e9ecef;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .status {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .demo-button {
+            background: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem;
+            font-size: 1rem;
+        }
+        .demo-button:hover {
+            background: #0056b3;
+        }
+        .demo-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🚀 Payment System Demo</h1>
+        <p>This demo shows your configured payment system with real wallet addresses and PayPal integration.</p>
+        
+        <div class="demo-section">
+            <h2>📋 Configuration Status</h2>
+            <div id="config-status">Loading...</div>
+        </div>
+
+        <div class="demo-section">
+            <h2>💰 Crypto Wallets</h2>
+            <div id="crypto-wallets">Loading...</div>
+        </div>
+
+        <div class="demo-section">
+            <h2>💳 PayPal Configuration</h2>
+            <div id="paypal-config">Loading...</div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎯 Live Demo</h2>
+            <p>Click the buttons below to test the payment modals:</p>
+            <button class="demo-button" onclick="testPayment('basic')">Test Basic Plan ($29.99)</button>
+            <button class="demo-button" onclick="testPayment('pro')">Test Pro Plan ($99.99)</button>
+            <button class="demo-button" onclick="testPayment('enterprise')">Test Enterprise Plan ($299.99)</button>
+        </div>
+
+        <div class="demo-section">
+            <h2>📊 Real-time Crypto Prices</h2>
+            <button class="demo-button" onclick="updatePrices()">Update Crypto Prices</button>
+            <div id="price-status">Click button to update prices</div>
+        </div>
+    </div>
+
+    <!-- Payment System Scripts -->
+    <script src="js/payment-config.js"></script>
+    <script src="js/payment-integration.js"></script>
+    
+    <script>
+        // Initialize payment system
+        let paymentSystem;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                paymentSystem = new PaymentIntegration();
+                loadConfiguration();
+            } catch (error) {
+                console.error('Failed to initialize payment system:', error);
+                showError('Failed to initialize payment system');
+            }
+        });
+        
+        function loadConfiguration() {
+            // Check configuration status
+            const configStatus = document.getElementById('config-status');
+            const errors = PaymentConfig.validate();
+            
+            if (errors.length === 0) {
+                configStatus.innerHTML = '<div class="status success">✅ All payment methods configured correctly!</div>';
+            } else {
+                configStatus.innerHTML = '<div class="status error">❌ Configuration errors:<br>' + 
+                    errors.map(error => `• ${error}`).join('<br>') + '</div>';
+            }
+            
+            // Show crypto wallets
+            const cryptoDiv = document.getElementById('crypto-wallets');
+            let cryptoHtml = '';
+            
+            Object.entries(PaymentConfig.cryptoWallets).forEach(([crypto, wallet]) => {
+                const isConfigured = wallet.address && !wallet.address.includes('YOUR_');
+                cryptoHtml += `
+                    <div class="wallet-info">
+                        <strong>${crypto.toUpperCase()}:</strong> 
+                        ${isConfigured ? 
+                            `<span style="color: green;">✅ ${wallet.address}</span>` : 
+                            `<span style="color: red;">❌ Not configured</span>`
+                        }
+                    </div>
+                `;
+            });
+            
+            cryptoDiv.innerHTML = cryptoHtml;
+            
+            // Show PayPal config
+            const paypalDiv = document.getElementById('paypal-config');
+            const paypalConfigured = PaymentConfig.paypal.businessEmail && 
+                                   !PaymentConfig.paypal.businessEmail.includes('YOUR_');
+            
+            paypalDiv.innerHTML = `
+                <div class="wallet-info">
+                    <strong>Business Email:</strong> 
+                    ${paypalConfigured ? 
+                        `<span style="color: green;">✅ ${PaymentConfig.paypal.businessEmail}</span>` : 
+                        `<span style="color: red;">❌ Not configured</span>`
+                    }
+                </div>
+                <div class="wallet-info">
+                    <strong>PayPal.Me Link:</strong> 
+                    <span style="color: green;">✅ ${PaymentConfig.paypal.paypalMeLink}</span>
+                </div>
+            `;
+        }
+        
+        function testPayment(plan) {
+            try {
+                paymentSystem.showPaymentModal(plan);
+            } catch (error) {
+                console.error('Failed to show payment modal:', error);
+                alert('Failed to show payment modal. Check console for details.');
+            }
+        }
+        
+        async function updatePrices() {
+            const statusDiv = document.getElementById('price-status');
+            statusDiv.innerHTML = '<div class="status">⏳ Updating prices...</div>';
+            
+            try {
+                await PaymentConfig.updateCryptoPrices();
+                
+                let priceHtml = '<div class="status success">✅ Prices updated successfully!</div>';
+                
+                Object.entries(PaymentConfig.pricing).forEach(([plan, pricing]) => {
+                    priceHtml += `<h4>${plan.toUpperCase()} Plan ($${pricing.usd}):</h4>`;
+                    priceHtml += '<div class="wallet-info">';
+                    Object.entries(pricing.crypto).forEach(([crypto, amount]) => {
+                        priceHtml += `${crypto}: ${amount} ${crypto.toUpperCase()}<br>`;
+                    });
+                    priceHtml += '</div>';
+                });
+                
+                statusDiv.innerHTML = priceHtml;
+            } catch (error) {
+                console.error('Failed to update prices:', error);
+                statusDiv.innerHTML = '<div class="status error">❌ Failed to update prices: ' + error.message + '</div>';
+            }
+        }
+        
+        function showError(message) {
+            document.body.innerHTML = `
+                <div class="demo-container">
+                    <div class="status error">
+                        <h2>❌ Error</h2>
+                        <p>${message}</p>
+                        <p>Please check the browser console for more details.</p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

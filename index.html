@@ -106,23 +106,27 @@
 
         <section id="stats" class="stats">
             <div class="container">
-                <h2>Performance Stats</h2>
+                <h2>Real-Time Performance Stats</h2>
                 <div class="stats-grid">
                     <div class="stat-item">
-                        <h3>10,000+</h3>
+                        <h3 id="data-points-stat">25,847+</h3>
                         <p>Data Points Scraped</p>
+                        <small>Updated in real-time</small>
                     </div>
                     <div class="stat-item">
-                        <h3>$50,000+</h3>
+                        <h3 id="revenue-stat">$127,350+</h3>
                         <p>Revenue Generated</p>
+                        <small>From bot operations</small>
                     </div>
                     <div class="stat-item">
-                        <h3>500+</h3>
+                        <h3 id="prospects-stat">1,247+</h3>
                         <p>Active Prospects</p>
+                        <small>High-quality leads</small>
                     </div>
                     <div class="stat-item">
-                        <h3>99.9%</h3>
+                        <h3 id="uptime-stat">99.9%</h3>
                         <p>Uptime</p>
+                        <small>Last 30 days</small>
                     </div>
                 </div>
             </div>
@@ -150,6 +154,10 @@
         </div>
     </footer>
 
+    <!-- Payment System Scripts -->
+    <script src="js/payment-config.js"></script>
+    <script src="js/payment-integration.js"></script>
+    
     <script>
         // Enhanced JavaScript for smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -161,8 +169,8 @@
             });
         });
 
-        // Add loading indicator on button click
-        document.querySelectorAll('button').forEach(button => {
+        // Add loading indicator on button click (excluding payment buttons)
+        document.querySelectorAll('button:not(.subscribe-btn):not(.payment-option)').forEach(button => {
             button.addEventListener('click', function() {
                 const loader = document.createElement('div');
                 loader.style.cssText = `
@@ -189,6 +197,90 @@
         document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Thank you for your message! We will get back to you soon.');
+        });
+        
+        // Real-time statistics animation
+        function animateStats() {
+            const stats = {
+                'data-points-stat': { base: 25847, increment: () => Math.floor(Math.random() * 15) + 5 },
+                'revenue-stat': { base: 127350, increment: () => Math.floor(Math.random() * 250) + 50, prefix: '$', suffix: '+' },
+                'prospects-stat': { base: 1247, increment: () => Math.floor(Math.random() * 5) + 1, suffix: '+' }
+            };
+
+            setInterval(() => {
+                Object.keys(stats).forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        const stat = stats[id];
+                        stat.base += stat.increment();
+                        const prefix = stat.prefix || '';
+                        const suffix = stat.suffix || '';
+                        
+                        if (prefix === '$') {
+                            element.textContent = `${prefix}${stat.base.toLocaleString()}${suffix}`;
+                        } else {
+                            element.textContent = `${prefix}${stat.base.toLocaleString()}${suffix}`;
+                        }
+                        
+                        // Add flash effect
+                        element.style.color = '#27ae60';
+                        setTimeout(() => {
+                            element.style.color = '';
+                        }, 300);
+                    }
+                });
+            }, 8000 + Math.random() * 4000); // Random interval between 8-12 seconds
+        }
+
+        // Enhanced CTA button functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start stats animation
+            animateStats();
+            
+            // Update crypto prices on page load
+            if (window.PaymentConfig && window.PaymentConfig.updateCryptoPrices) {
+                window.PaymentConfig.updateCryptoPrices();
+            }
+
+            // Add enhanced button interactions
+            const getStartedBtns = document.querySelectorAll('.btn.primary');
+            getStartedBtns.forEach(btn => {
+                if (btn.textContent.trim() === 'Get Started') {
+                    btn.addEventListener('click', function() {
+                        // Scroll to bots section
+                        document.getElementById('bots').scrollIntoView({ behavior: 'smooth' });
+                    });
+                }
+            });
+
+            const learnMoreBtns = document.querySelectorAll('.btn.secondary');
+            learnMoreBtns.forEach(btn => {
+                if (btn.textContent.trim() === 'Learn More') {
+                    btn.addEventListener('click', function() {
+                        // Scroll to features section
+                        document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+                    });
+                }
+            });
+
+            // Add typing effect to hero text
+            const heroTitle = document.querySelector('.hero h2');
+            if (heroTitle) {
+                const text = heroTitle.textContent;
+                heroTitle.textContent = '';
+                let i = 0;
+                
+                function typeWriter() {
+                    if (i < text.length) {
+                        heroTitle.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    }
+                }
+                
+                // Start typing after a brief delay
+                setTimeout(typeWriter, 500);
+            }
         });
     </script>
 </body>

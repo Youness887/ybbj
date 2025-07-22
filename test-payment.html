@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment System Test - BotHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            padding: 2rem;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment System Test</h1>
+    
+    <div class="test-section">
+        <h2>Configuration Test</h2>
+        <button class="test-button" onclick="testConfig()">Test Payment Configuration</button>
+        <div id="config-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Payment Modal Test</h2>
+        <button class="test-button" onclick="testPaymentModal('basic')">Test Basic Plan</button>
+        <button class="test-button" onclick="testPaymentModal('pro')">Test Pro Plan</button>
+        <button class="test-button" onclick="testPaymentModal('enterprise')">Test Enterprise Plan</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Crypto Price Update Test</h2>
+        <button class="test-button" onclick="testCryptoPrices()">Update Crypto Prices</button>
+        <div id="crypto-result" class="result"></div>
+    </div>
+
+    <!-- Payment System Scripts -->
+    <script src="js/payment-config.js"></script>
+    <script src="js/payment-integration.js"></script>
+    <script src="validate-payment.js"></script>
+    
+    <script>
+        // Test configuration
+        function testConfig() {
+            const result = document.getElementById('config-result');
+            
+            if (window.PaymentConfig) {
+                const errors = window.PaymentConfig.validate();
+                if (errors.length === 0) {
+                    result.innerHTML = '<span style="color: green;">✅ Payment configuration is valid!</span>';
+                } else {
+                    result.innerHTML = '<span style="color: red;">❌ Configuration errors:</span><ul>' + 
+                        errors.map(error => `<li>${error}</li>`).join('') + '</ul>';
+                }
+                
+                // Show wallet addresses
+                result.innerHTML += '<h4>Configured Wallets:</h4>';
+                Object.entries(window.PaymentConfig.cryptoWallets).forEach(([crypto, wallet]) => {
+                    result.innerHTML += `<p><strong>${crypto}:</strong> ${wallet.address}</p>`;
+                });
+                
+                result.innerHTML += `<h4>PayPal:</h4><p>${window.PaymentConfig.paypal.businessEmail}</p>`;
+                result.innerHTML += `<p>PayPal.Me: ${window.PaymentConfig.paypal.paypalMeLink}</p>`;
+            } else {
+                result.innerHTML = '<span style="color: red;">❌ PaymentConfig not loaded</span>';
+            }
+        }
+        
+        // Test payment modal
+        function testPaymentModal(plan) {
+            if (window.PaymentIntegration) {
+                // Create a new payment integration instance
+                const paymentSystem = new PaymentIntegration();
+                paymentSystem.showPaymentModal(plan);
+            } else {
+                alert('PaymentIntegration not available');
+            }
+        }
+        
+        // Test crypto price update
+        async function testCryptoPrices() {
+            const result = document.getElementById('crypto-result');
+            result.innerHTML = 'Updating crypto prices...';
+            
+            try {
+                await window.PaymentConfig.updateCryptoPrices();
+                result.innerHTML = '<span style="color: green;">✅ Crypto prices updated successfully!</span>';
+                
+                // Show updated prices
+                result.innerHTML += '<h4>Updated Pricing:</h4>';
+                Object.entries(window.PaymentConfig.pricing).forEach(([plan, pricing]) => {
+                    result.innerHTML += `<h5>${plan.toUpperCase()} Plan ($${pricing.usd}):</h5>`;
+                    Object.entries(pricing.crypto).forEach(([crypto, amount]) => {
+                        result.innerHTML += `<p>${crypto}: ${amount}</p>`;
+                    });
+                });
+            } catch (error) {
+                result.innerHTML = '<span style="color: red;">❌ Failed to update prices: ' + error.message + '</span>';
+            }
+        }
+        
+        // Auto-run configuration test on load
+        document.addEventListener('DOMContentLoaded', function() {
+            testConfig();
+        });
+    </script>
+</body>
+</html>

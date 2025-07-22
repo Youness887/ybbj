@@ -143,30 +143,44 @@ class BotIntegration {
                 // Simulate scraping delay with progress
                 await this.simulateProgressDelay(delay * 1000);
 
-                // Simulate potential errors (5% chance)
-                if (Math.random() < 0.05) {
-                    const error = `Warning: Minor issue on page ${i + 1}`;
+                // Simulate potential errors (3% chance, reduced for better UX)
+                if (Math.random() < 0.03) {
+                    const error = `Warning: Rate limit detected on page ${i + 1}, retrying...`;
                     this.errors.push(error);
                     this.showNotification(error, 'error');
+                    // Simulate retry delay
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
 
-                // Simulate scraped data
-                const mockData = this.generateMockData(config.scrapeType);
+                // Simulate scraped data with more variety
+                const mockData = this.generateMockData(config.scrapeType, i + 1);
                 this.addResult(mockData);
-                this.totalScraped += Math.floor(Math.random() * 5) + 1;
+                this.totalScraped += Math.floor(Math.random() * 8) + 3;
                 
                 this.updateStats(i + 1, this.totalScraped);
+
+                // Add realistic timing variation
+                if (Math.random() < 0.2) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
             }
 
             if (this.isRunning) {
                 const duration = (Date.now() - this.startTime) / 1000;
                 this.updateStatus('Completed', 'status-stopped');
                 this.enableDownload();
-                this.showNotification(`Bot completed in ${duration.toFixed(1)}s!`, 'success');
+                this.showNotification(
+                    `🎉 Bot completed successfully! Processed ${maxPages} pages in ${duration.toFixed(1)}s. ` +
+                    `Collected ${this.totalScraped} data points!`, 
+                    'success'
+                );
+                
+                // Show final stats
+                this.showFinalStats();
             }
         } catch (error) {
             this.errors.push(error.message);
-            this.showNotification('Bot encountered an error', 'error');
+            this.showNotification('❌ Bot encountered a critical error: ' + error.message, 'error');
             this.updateStatus('Error', 'status-stopped');
         }
         
@@ -185,40 +199,72 @@ class BotIntegration {
     }
 
     // Generate mock data based on scrape type
-    generateMockData(scrapeType) {
+    generateMockData(scrapeType, pageNumber = 1) {
+        const industries = ['Technology', 'Healthcare', 'Finance', 'Retail', 'Manufacturing', 'Education'];
+        const productCategories = ['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Toys'];
+        const locations = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia'];
+        
         const mockData = {
             leads: {
-                company: `Sample Company ${Math.floor(Math.random() * 100)}`,
-                contact: `contact${Math.floor(Math.random() * 100)}@example.com`,
-                phone: `+1-555-${Math.floor(Math.random() * 9000) + 1000}`,
-                industry: 'Technology'
+                company: `${['Alpha', 'Beta', 'Gamma', 'Delta', 'Sigma'][Math.floor(Math.random() * 5)]} ${['Corp', 'Inc', 'LLC', 'Ltd'][Math.floor(Math.random() * 4)]}`,
+                contact: `${['john', 'sarah', 'mike', 'lisa', 'david'][Math.floor(Math.random() * 5)]}${Math.floor(Math.random() * 100)}@business.com`,
+                phone: `+1-555-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                industry: industries[Math.floor(Math.random() * industries.length)],
+                revenue: `$${Math.floor(Math.random() * 5000) + 500}K`,
+                employees: `${Math.floor(Math.random() * 500) + 10}`,
+                quality: ['Hot', 'Warm', 'Cold'][Math.floor(Math.random() * 3)]
             },
             products: {
-                name: `Product ${Math.floor(Math.random() * 100)}`,
+                name: `${['Premium', 'Professional', 'Deluxe', 'Standard'][Math.floor(Math.random() * 4)]} Product ${pageNumber}-${Math.floor(Math.random() * 10)}`,
                 price: `$${(Math.random() * 500 + 10).toFixed(2)}`,
-                rating: `${(Math.random() * 2 + 3).toFixed(1)}/5`,
-                availability: 'In Stock'
+                cost: `$${(Math.random() * 50 + 2).toFixed(2)}`,
+                profit: `${Math.floor(Math.random() * 400 + 100)}%`,
+                rating: `${(Math.random() * 1.5 + 3.5).toFixed(1)}/5`,
+                reviews: Math.floor(Math.random() * 5000 + 100),
+                availability: Math.random() > 0.2 ? 'In Stock' : 'Limited Stock',
+                category: productCategories[Math.floor(Math.random() * productCategories.length)]
             },
             'real-estate': {
-                address: `${Math.floor(Math.random() * 9999)} Sample St`,
-                price: `$${(Math.random() * 500000 + 100000).toFixed(0)}`,
+                address: `${Math.floor(Math.random() * 9999) + 1} ${['Oak', 'Pine', 'Main', 'Elm', 'Broadway'][Math.floor(Math.random() * 5)]} ${['St', 'Ave', 'Blvd'][Math.floor(Math.random() * 3)]}`,
+                price: `$${(Math.random() * 800000 + 200000).toFixed(0)}`,
                 beds: Math.floor(Math.random() * 5) + 1,
-                baths: Math.floor(Math.random() * 3) + 1
+                baths: Math.floor(Math.random() * 3) + 1,
+                sqft: `${Math.floor(Math.random() * 2000) + 800}`,
+                type: ['Single Family', 'Condo', 'Townhouse'][Math.floor(Math.random() * 3)],
+                location: locations[Math.floor(Math.random() * locations.length)]
             },
             jobs: {
-                title: `Job Title ${Math.floor(Math.random() * 100)}`,
-                company: `Company ${Math.floor(Math.random() * 100)}`,
-                location: 'Remote',
-                salary: `$${(Math.random() * 50000 + 40000).toFixed(0)}/year`
+                title: `${['Senior', 'Junior', 'Lead', ''][Math.floor(Math.random() * 4)]} ${['Developer', 'Designer', 'Manager', 'Analyst'][Math.floor(Math.random() * 4)]}`.trim(),
+                company: `${['Tech', 'Global', 'Smart', 'Digital'][Math.floor(Math.random() * 4)]} ${['Solutions', 'Systems', 'Corp', 'Inc'][Math.floor(Math.random() * 4)]}`,
+                location: Math.random() > 0.3 ? 'Remote' : locations[Math.floor(Math.random() * locations.length)],
+                salary: `$${(Math.random() * 100000 + 40000).toFixed(0)}/year`,
+                type: ['Full-time', 'Part-time', 'Contract'][Math.floor(Math.random() * 3)],
+                experience: `${Math.floor(Math.random() * 8)}+ years`
             },
             custom: {
-                data: `Custom data point ${Math.floor(Math.random() * 1000)}`,
-                value: Math.floor(Math.random() * 100),
-                timestamp: new Date().toISOString()
+                data: `Custom data point ${pageNumber}-${Math.floor(Math.random() * 100)}`,
+                value: Math.floor(Math.random() * 1000) + 1,
+                category: `Category ${Math.floor(Math.random() * 10) + 1}`,
+                timestamp: new Date().toISOString(),
+                quality: Math.random() > 0.3 ? 'High' : 'Medium'
             }
         };
 
         return mockData[scrapeType] || mockData.custom;
+    }
+
+    // Show final statistics after completion
+    showFinalStats() {
+        const duration = (Date.now() - this.startTime) / 1000;
+        const rate = (this.totalScraped / duration).toFixed(2);
+        
+        setTimeout(() => {
+            this.showNotification(
+                `📊 Final Stats: ${this.totalScraped} data points at ${rate} points/sec. ` +
+                `Error rate: ${((this.errors.length / this.currentPage) * 100).toFixed(1)}%`,
+                'info'
+            );
+        }, 2000);
     }
 
     // Enable download button
