@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - BotHub</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        .metric-trend {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        .export-btn {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .export-btn:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-chart-bar text-blue-600"></i>
+                        Analytics Dashboard
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600">← Back to Site</a>
+                    <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <a href="#" class="export-btn" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- KPI Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="dashboard-card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-80">Total Revenue</p>
+                        <h3 class="text-2xl font-bold" id="total-revenue">$0</h3>
+                        <p class="metric-trend" id="revenue-trend">+0% this month</p>
+                    </div>
+                    <i class="fas fa-dollar-sign text-3xl opacity-60"></i>
+                </div>
+            </div>
+            
+            <div class="dashboard-card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-80">Email Subscribers</p>
+                        <h3 class="text-2xl font-bold" id="email-count">0</h3>
+                        <p class="metric-trend" id="email-trend">+0 new today</p>
+                    </div>
+                    <i class="fas fa-envelope text-3xl opacity-60"></i>
+                </div>
+            </div>
+            
+            <div class="dashboard-card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-80">Active Sessions</p>
+                        <h3 class="text-2xl font-bold" id="active-sessions">0</h3>
+                        <p class="metric-trend" id="session-trend">+0% vs yesterday</p>
+                    </div>
+                    <i class="fas fa-users text-3xl opacity-60"></i>
+                </div>
+            </div>
+            
+            <div class="dashboard-card stat-card p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-80">Conversion Rate</p>
+                        <h3 class="text-2xl font-bold" id="conversion-rate">0%</h3>
+                        <p class="metric-trend" id="conversion-trend">industry avg: 2.3%</p>
+                    </div>
+                    <i class="fas fa-chart-line text-3xl opacity-60"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Revenue Chart -->
+            <div class="dashboard-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Revenue Over Time</h3>
+                    <select id="revenue-period" class="text-sm border rounded px-2 py-1">
+                        <option value="7">Last 7 days</option>
+                        <option value="30">Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- User Segments -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">User Segments</h3>
+                <div class="chart-container">
+                    <canvas id="segmentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bot Interest & Device Analytics -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Bot Interest -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Bot Interest Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="botInterestChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Device & Browser Stats -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Device & Browser Analytics</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">Device Types</h4>
+                        <div id="device-stats" class="space-y-2">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-700 mb-2">Top Browsers</h4>
+                        <div id="browser-stats" class="space-y-2">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Performance & Lead Scoring -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Email Performance -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Email Capture Performance</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span class="text-sm font-medium">Exit Intent</span>
+                        <div class="text-right">
+                            <span class="text-lg font-bold text-green-600" id="exit-intent-count">0</span>
+                            <p class="text-xs text-gray-500">35% conversion</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span class="text-sm font-medium">Newsletter</span>
+                        <div class="text-right">
+                            <span class="text-lg font-bold text-blue-600" id="newsletter-count">0</span>
+                            <p class="text-xs text-gray-500">12% conversion</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                        <span class="text-sm font-medium">Calculator</span>
+                        <div class="text-right">
+                            <span class="text-lg font-bold text-purple-600" id="calculator-count">0</span>
+                            <p class="text-xs text-gray-500">42% conversion</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lead Scoring Distribution -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Lead Score Distribution</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Hot Leads (80-100)</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-24 bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-600 h-2 rounded-full" style="width: 0%" id="hot-leads-bar"></div>
+                            </div>
+                            <span class="text-sm font-medium" id="hot-leads-count">0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Warm Leads (50-79)</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-24 bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: 0%" id="warm-leads-bar"></div>
+                            </div>
+                            <span class="text-sm font-medium" id="warm-leads-count">0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm">Cold Leads (0-49)</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-24 bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 0%" id="cold-leads-bar"></div>
+                            </div>
+                            <span class="text-sm font-medium" id="cold-leads-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity & Top Pages -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Activity -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+                <div id="recent-activity" class="space-y-3 max-h-64 overflow-y-auto">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Top Performing Content -->
+            <div class="dashboard-card p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Performance Insights</h3>
+                <div class="space-y-4">
+                    <div class="p-3 bg-green-50 border-l-4 border-green-400">
+                        <h4 class="font-medium text-green-800">Best Converting Bot</h4>
+                        <p class="text-sm text-green-600" id="best-bot">TikTok Bot - 45% interest rate</p>
+                    </div>
+                    <div class="p-3 bg-blue-50 border-l-4 border-blue-400">
+                        <h4 class="font-medium text-blue-800">Peak Traffic Time</h4>
+                        <p class="text-sm text-blue-600" id="peak-time">2:00 PM - 4:00 PM EST</p>
+                    </div>
+                    <div class="p-3 bg-purple-50 border-l-4 border-purple-400">
+                        <h4 class="font-medium text-purple-800">Top Lead Magnet</h4>
+                        <p class="text-sm text-purple-600" id="top-magnet">Profit Calculator - 42% conversion</p>
+                    </div>
+                    <div class="p-3 bg-orange-50 border-l-4 border-orange-400">
+                        <h4 class="font-medium text-orange-800">Revenue per Visitor</h4>
+                        <p class="text-sm text-orange-600" id="rpv">$2.34 average</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard Analytics System
+        class AnalyticsDashboard {
+            constructor() {
+                this.charts = {};
+                this.data = this.loadAnalyticsData();
+                this.init();
+            }
+
+            init() {
+                this.updateKPIs();
+                this.createCharts();
+                this.updateRecentActivity();
+                this.updateDeviceStats();
+                this.updateEmailStats();
+                this.updateLeadScoring();
+                
+                // Auto-refresh every 30 seconds
+                setInterval(() => this.refreshData(), 30000);
+            }
+
+            loadAnalyticsData() {
+                return {
+                    userAnalytics: JSON.parse(localStorage.getItem('userAnalytics') || '[]'),
+                    revenueData: JSON.parse(localStorage.getItem('revenueData') || '[]'),
+                    capturedEmails: JSON.parse(localStorage.getItem('capturedEmails') || '[]'),
+                    conversions: JSON.parse(localStorage.getItem('conversions') || '[]')
+                };
+            }
+
+            updateKPIs() {
+                // Total Revenue
+                const totalRevenue = this.data.revenueData.reduce((sum, item) => sum + item.amount, 0);
+                document.getElementById('total-revenue').textContent = `$${totalRevenue.toLocaleString()}`;
+
+                // Email Count
+                document.getElementById('email-count').textContent = this.data.capturedEmails.length;
+                
+                // Active Sessions (approximate)
+                const recentSessions = this.data.userAnalytics.filter(
+                    session => Date.now() - session.timestamp < 24 * 60 * 60 * 1000
+                );
+                document.getElementById('active-sessions').textContent = recentSessions.length;
+
+                // Conversion Rate
+                const totalVisitors = this.data.userAnalytics.length;
+                const totalConversions = this.data.conversions.length;
+                const conversionRate = totalVisitors > 0 ? (totalConversions / totalVisitors * 100).toFixed(1) : 0;
+                document.getElementById('conversion-rate').textContent = `${conversionRate}%`;
+            }
+
+            createCharts() {
+                this.createRevenueChart();
+                this.createSegmentChart();
+                this.createBotInterestChart();
+            }
+
+            createRevenueChart() {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                
+                // Process revenue data by day
+                const last7Days = [];
+                const revenueByDay = {};
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    last7Days.push(dateStr);
+                    revenueByDay[dateStr] = 0;
+                }
+
+                this.data.revenueData.forEach(item => {
+                    const date = new Date(item.timestamp).toISOString().split('T')[0];
+                    if (revenueByDay.hasOwnProperty(date)) {
+                        revenueByDay[date] += item.amount;
+                    }
+                });
+
+                this.charts.revenue = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: last7Days.map(date => new Date(date).toLocaleDateString()),
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: last7Days.map(date => revenueByDay[date]),
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            createSegmentChart() {
+                const ctx = document.getElementById('segmentChart').getContext('2d');
+                
+                const segments = {};
+                this.data.userAnalytics.forEach(session => {
+                    const segment = this.calculateUserSegment(session);
+                    segments[segment] = (segments[segment] || 0) + 1;
+                });
+
+                this.charts.segment = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(segments),
+                        datasets: [{
+                            data: Object.values(segments),
+                            backgroundColor: [
+                                '#ef4444', // Hot leads - red
+                                '#f59e0b', // Interested prospects - orange
+                                '#10b981', // Engaged visitors - green
+                                '#6b7280'  // Casual visitors - gray
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            createBotInterestChart() {
+                const ctx = document.getElementById('botInterestChart').getContext('2d');
+                
+                const botInterests = {};
+                this.data.userAnalytics.forEach(session => {
+                    if (session.userBehavior && session.userBehavior.botInterests) {
+                        session.userBehavior.botInterests.forEach(interest => {
+                            botInterests[interest.bot] = (botInterests[interest.bot] || 0) + 1;
+                        });
+                    }
+                });
+
+                this.charts.botInterest = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(botInterests),
+                        datasets: [{
+                            label: 'Interest Level',
+                            data: Object.values(botInterests),
+                            backgroundColor: [
+                                '#8b5cf6', // purple
+                                '#06b6d4', // cyan
+                                '#10b981', // green
+                                '#f59e0b', // orange
+                                '#ef4444'  // red
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            calculateUserSegment(session) {
+                if (!session.userBehavior) return 'casual-visitor';
+                
+                const leadScore = session.leadScore || 0;
+                const timeOnSite = (session.userBehavior.timeOnPage || 0) / (1000 * 60);
+                const botInterests = (session.userBehavior.botInterests || []).length;
+                
+                if (leadScore >= 70 && timeOnSite >= 5) return 'hot-lead';
+                if (leadScore >= 40 && botInterests >= 3) return 'interested-prospect';
+                if (timeOnSite >= 2) return 'engaged-visitor';
+                return 'casual-visitor';
+            }
+
+            updateRecentActivity() {
+                const activityContainer = document.getElementById('recent-activity');
+                const activities = [];
+
+                // Email captures
+                this.data.capturedEmails.slice(-5).forEach(email => {
+                    activities.push({
+                        timestamp: email.timestamp,
+                        type: 'email',
+                        description: `New email captured via ${email.source}`,
+                        icon: 'fas fa-envelope',
+                        color: 'text-green-600'
+                    });
+                });
+
+                // Revenue events
+                this.data.revenueData.slice(-5).forEach(revenue => {
+                    activities.push({
+                        timestamp: revenue.timestamp,
+                        type: 'revenue',
+                        description: `Revenue: $${revenue.amount} from ${revenue.source}`,
+                        icon: 'fas fa-dollar-sign',
+                        color: 'text-blue-600'
+                    });
+                });
+
+                // Sort by timestamp
+                activities.sort((a, b) => b.timestamp - a.timestamp);
+
+                activityContainer.innerHTML = activities.slice(0, 8).map(activity => `
+                    <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+                        <i class="${activity.icon} ${activity.color}"></i>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-800">${activity.description}</p>
+                            <p class="text-xs text-gray-500">${new Date(activity.timestamp).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateDeviceStats() {
+                const deviceStats = {};
+                const browserStats = {};
+
+                this.data.userAnalytics.forEach(session => {
+                    if (session.deviceInfo) {
+                        const device = session.deviceInfo.deviceType || 'unknown';
+                        const browser = session.deviceInfo.browser || 'unknown';
+                        
+                        deviceStats[device] = (deviceStats[device] || 0) + 1;
+                        browserStats[browser] = (browserStats[browser] || 0) + 1;
+                    }
+                });
+
+                // Update device stats
+                const deviceContainer = document.getElementById('device-stats');
+                const total = Object.values(deviceStats).reduce((sum, count) => sum + count, 0);
+                
+                deviceContainer.innerHTML = Object.entries(deviceStats)
+                    .sort(([,a], [,b]) => b - a)
+                    .map(([device, count]) => {
+                        const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                        return `
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm capitalize">${device}</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-600">${percentage}%</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                // Update browser stats
+                const browserContainer = document.getElementById('browser-stats');
+                browserContainer.innerHTML = Object.entries(browserStats)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 3)
+                    .map(([browser, count]) => {
+                        const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                        return `
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">${browser}</span>
+                                <span class="text-xs text-gray-600">${percentage}%</span>
+                            </div>
+                        `;
+                    }).join('');
+            }
+
+            updateEmailStats() {
+                const emailSources = {};
+                this.data.capturedEmails.forEach(email => {
+                    emailSources[email.source] = (emailSources[email.source] || 0) + 1;
+                });
+
+                document.getElementById('exit-intent-count').textContent = emailSources['exit-intent'] || 0;
+                document.getElementById('newsletter-count').textContent = emailSources['newsletter'] || 0;
+                document.getElementById('calculator-count').textContent = emailSources['calculator'] || 0;
+            }
+
+            updateLeadScoring() {
+                const scores = { hot: 0, warm: 0, cold: 0 };
+                
+                this.data.userAnalytics.forEach(session => {
+                    const leadScore = session.leadScore || 0;
+                    if (leadScore >= 80) scores.hot++;
+                    else if (leadScore >= 50) scores.warm++;
+                    else scores.cold++;
+                });
+
+                const total = scores.hot + scores.warm + scores.cold;
+                
+                // Update counts and percentages
+                document.getElementById('hot-leads-count').textContent = scores.hot;
+                document.getElementById('warm-leads-count').textContent = scores.warm;
+                document.getElementById('cold-leads-count').textContent = scores.cold;
+
+                if (total > 0) {
+                    document.getElementById('hot-leads-bar').style.width = `${(scores.hot / total) * 100}%`;
+                    document.getElementById('warm-leads-bar').style.width = `${(scores.warm / total) * 100}%`;
+                    document.getElementById('cold-leads-bar').style.width = `${(scores.cold / total) * 100}%`;
+                }
+            }
+
+            refreshData() {
+                this.data = this.loadAnalyticsData();
+                this.updateKPIs();
+                this.updateRecentActivity();
+                this.updateDeviceStats();
+                this.updateEmailStats();
+                this.updateLeadScoring();
+                
+                // Update charts
+                Object.values(this.charts).forEach(chart => chart.destroy());
+                this.createCharts();
+            }
+        }
+
+        // Global functions
+        function refreshData() {
+            dashboard.refreshData();
+            
+            // Show refresh feedback
+            const refreshBtn = document.querySelector('button[onclick="refreshData()"]');
+            const originalText = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            refreshBtn.disabled = true;
+            
+            setTimeout(() => {
+                refreshBtn.innerHTML = originalText;
+                refreshBtn.disabled = false;
+            }, 1000);
+        }
+
+        function exportData() {
+            const data = {
+                userAnalytics: JSON.parse(localStorage.getItem('userAnalytics') || '[]'),
+                revenueData: JSON.parse(localStorage.getItem('revenueData') || '[]'),
+                capturedEmails: JSON.parse(localStorage.getItem('capturedEmails') || '[]'),
+                conversions: JSON.parse(localStorage.getItem('conversions') || '[]'),
+                exportedAt: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analytics-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize dashboard
+        const dashboard = new AnalyticsDashboard();
+
+        // Generate some demo data if none exists
+        if (dashboard.data.userAnalytics.length === 0) {
+            generateDemoData();
+            dashboard.refreshData();
+        }
+
+        function generateDemoData() {
+            // Generate demo analytics data
+            const demoData = [];
+            const demoEmails = [];
+            const demoRevenue = [];
+            
+            for (let i = 0; i < 50; i++) {
+                const timestamp = Date.now() - (Math.random() * 7 * 24 * 60 * 60 * 1000);
+                
+                demoData.push({
+                    sessionId: `demo_${i}`,
+                    timestamp: timestamp,
+                    deviceInfo: {
+                        deviceType: ['desktop', 'mobile', 'tablet'][Math.floor(Math.random() * 3)],
+                        browser: ['Chrome', 'Firefox', 'Safari', 'Edge'][Math.floor(Math.random() * 4)],
+                        os: ['Windows', 'macOS', 'iOS', 'Android'][Math.floor(Math.random() * 4)]
+                    },
+                    userBehavior: {
+                        timeOnPage: Math.random() * 300000,
+                        scrollDepth: Math.random() * 100,
+                        botInterests: Math.random() > 0.7 ? [{
+                            bot: ['tiktok', 'webscraper', 'content', 'prospect'][Math.floor(Math.random() * 4)],
+                            type: 'click'
+                        }] : []
+                    },
+                    leadScore: Math.floor(Math.random() * 100)
+                });
+
+                // Some users capture emails
+                if (Math.random() > 0.8) {
+                    demoEmails.push({
+                        email: `demo${i}@example.com`,
+                        source: ['exit-intent', 'newsletter', 'calculator'][Math.floor(Math.random() * 3)],
+                        timestamp: timestamp,
+                        leadScore: Math.floor(Math.random() * 100)
+                    });
+                }
+
+                // Some generate revenue
+                if (Math.random() > 0.9) {
+                    demoRevenue.push({
+                        amount: [29, 99, 299][Math.floor(Math.random() * 3)],
+                        source: 'subscription-starter',
+                        timestamp: timestamp
+                    });
+                }
+            }
+
+            localStorage.setItem('userAnalytics', JSON.stringify(demoData));
+            localStorage.setItem('capturedEmails', JSON.stringify(demoEmails));
+            localStorage.setItem('revenueData', JSON.stringify(demoRevenue));
+        }
+    </script>
+</body>
+</html>
