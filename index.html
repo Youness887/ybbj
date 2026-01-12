@@ -3,157 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI NEXUS V8 - النظام المتكامل</title>
-    <!-- Tailwind CSS للابتكار البصري -->
+    <title>AI NEXUS Web3 - نظام الربط</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- خطوط جوجل الاحترافية -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- مكتبة Ethers.js للتعامل مع البلوكشين -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <style>
-        body { 
-            font-family: 'Tajawal', sans-serif; 
-            background-color: #020617;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        /* تحسين مظهر التمرير للهواتف */
+        body { font-family: 'Tajawal', sans-serif; background-color: #020617; color: #e2e8f0; }
         ::-webkit-scrollbar { display: none; }
-        .glass-effect {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(51, 65, 85, 0.5);
-        }
-        .nft-gradient {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-        }
-        .bg-grid {
-            background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
+        .nft-btn { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
     </style>
 </head>
-<body class="bg-grid">
+<body>
     <div id="root"></div>
 
-    <!-- مكتبات React الأساسية -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
 
         function App() {
-            const [messages, setMessages] = useState([
-                { id: 1, role: 'assistant', content: 'تم تفعيل محرك Nexus V8 بنجاح. أنا الآن مرتبط بمستودع GitHub الخاص بك وجاهز لبدء العمل على الـ NFTs أو تحليل الأسواق.' }
-            ]);
-            const [input, setInput] = useState('');
-            const [mode, setMode] = useState('nft'); // nft, trading, marketing
-            const [isThinking, setIsThinking] = useState(false);
-            const scrollRef = useRef(null);
+            const [account, setAccount] = useState(null);
+            const [status, setStatus] = useState('جاهز للربط');
 
-            useEffect(() => {
-                scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }, [messages]);
-
-            const handleAction = async () => {
-                if (!input.trim()) return;
-                
-                const userMsg = { id: Date.now(), role: 'user', content: input };
-                setMessages(prev => [...prev, userMsg]);
-                setInput('');
-                setIsThinking(true);
-
-                // محاكاة استجابة الذكاء الاصطناعي (يمكن ربطها بـ Gemini API)
-                setTimeout(() => {
-                    let aiResp = "";
-                    if (mode === 'nft') aiResp = "جاري معالجة طلب الـ NFT... لقد تم تصميم العقد الذكي المبدئي لـ: " + input;
-                    else if (mode === 'trading') aiResp = "تحليل السوق يشير إلى اتجاه صاعد بناءً على البيانات المتوفرة في مستودعك.";
-                    else aiResp = "تم وضع الخطة التسويقية. هل ننتقل لتوليد المحتوى الإعلاني؟";
-
-                    setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: aiResp }]);
-                    setIsThinking(false);
-                }, 1500);
+            // وظيفة ربط المحفظة
+            const connectWallet = async () => {
+                if (window.ethereum) {
+                    try {
+                        setStatus('جاري الاتصال...');
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        setAccount(accounts[0]);
+                        setStatus('متصل');
+                    } catch (error) {
+                        console.error(error);
+                        setStatus('فشل الاتصال');
+                    }
+                } else {
+                    alert('يرجى فتح التطبيق من داخل متصفح MetaMask على الهاتف أو تثبيت إضافة MetaMask');
+                }
             };
 
             return (
-                <div className="flex flex-col h-screen max-w-xl mx-auto border-x border-slate-800 shadow-2xl relative bg-[#020617]/90">
-                    {/* رأس التطبيق الاحترافي */}
-                    <header className="p-5 glass-effect flex justify-between items-center sticky top-0 z-50">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 nft-gradient rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <div className="flex flex-col h-screen max-w-xl mx-auto border-x border-slate-800 bg-[#020617]">
+                    {/* Header with Wallet Button */}
+                    <header className="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 nft-btn rounded-lg flex items-center justify-center">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                             </div>
-                            <div>
-                                <h1 className="text-white font-black text-sm tracking-tight">AI NEXUS V8</h1>
-                                <p className="text-[9px] text-indigo-400 font-bold tracking-[0.2em] uppercase">Enterprise Cloud</p>
-                            </div>
+                            <h1 className="text-white font-black text-xs uppercase tracking-widest">Nexus Web3</h1>
                         </div>
-                        <div className="flex gap-2">
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        </div>
+                        
+                        <button 
+                            onClick={connectWallet}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${
+                                account ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10' : 'border-indigo-500 text-white nft-btn'
+                            }`}
+                        >
+                            {account ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}` : 'Connect Wallet'}
+                        </button>
                     </header>
 
-                    {/* منطقة الرسائل والبيانات */}
-                    <main className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar pb-40">
-                        {messages.map((m) => (
-                            <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-start' : 'justify-end'} animate-in slide-in-from-bottom-2`}>
-                                <div className={`max-w-[90%] p-5 rounded-[2rem] text-sm leading-relaxed shadow-xl ${
-                                    m.role === 'user' 
-                                    ? 'bg-slate-800 text-slate-100 border border-slate-700 rounded-tr-none' 
-                                    : 'bg-white text-slate-900 font-bold rounded-tl-none'
-                                }`}>
-                                    {m.content}
-                                </div>
-                            </div>
-                        ))}
-                        {isThinking && (
-                            <div className="flex gap-2 p-3 bg-indigo-500/10 rounded-full w-fit animate-pulse border border-indigo-500/20">
-                                <span className="text-[10px] text-indigo-400 font-black px-2 uppercase tracking-widest">Processing Data...</span>
-                            </div>
+                    {/* Main Content */}
+                    <main className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6">
+                        <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center border border-indigo-500/20 animate-pulse">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        
+                        <h2 className="text-2xl font-black text-white">
+                            {account ? 'أنت جاهز للصك!' : 'اربط محفظتك للبدء'}
+                        </h2>
+                        <p className="text-slate-400 text-sm leading-relaxed">
+                            {account 
+                                ? 'يمكنك الآن صك (Mint) الـ NFTs الخاصة بك مباشرة على شبكة Polygon أو Ethereum.' 
+                                : 'يتطلب التفاعل مع الـ Blockchain وجود محفظة رقمية نشطة مثل MetaMask.'}
+                        </p>
+
+                        {account && (
+                            <button className="w-full py-4 rounded-2xl nft-btn text-white font-black shadow-lg shadow-indigo-500/30 hover:scale-105 transition-all">
+                                صك أول NFT الآن (Mint NFT)
+                            </button>
                         )}
-                        <div ref={scrollRef} />
                     </main>
 
-                    {/* لوحة التحكم السفلية */}
-                    <footer className="fixed bottom-0 w-full max-w-xl p-6 bg-gradient-to-t from-[#020617] via-[#020617] to-transparent">
-                        {/* تبديل الأوضاع */}
-                        <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar py-1">
-                            {[
-                                { id: 'nft', label: 'NFT Creator', icon: '🎨' },
-                                { id: 'trading', label: 'Trading', icon: '📊' },
-                                { id: 'marketing', label: 'Marketing', icon: '🚀' }
-                            ].map(btn => (
-                                <button 
-                                    key={btn.id}
-                                    onClick={() => setMode(btn.id)}
-                                    className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase transition-all flex items-center gap-2 border ${
-                                        mode === btn.id ? 'bg-indigo-600 text-white border-indigo-400 shadow-xl shadow-indigo-500/30' : 'bg-slate-900 text-slate-500 border-slate-800'
-                                    }`}
-                                >
-                                    <span>{btn.icon}</span> {btn.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* صندوق الإدخال */}
-                        <div className="glass-effect rounded-[2.5rem] p-2 flex items-center shadow-2xl border-slate-700 focus-within:border-indigo-500 transition-all">
-                            <textarea 
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                placeholder={`اطلب من العميل تنفيذ مهمة في ${mode}...`}
-                                className="flex-1 bg-transparent px-5 py-3 outline-none text-sm resize-none h-14 text-white placeholder:text-slate-600"
-                            />
-                            <button 
-                                onClick={handleAction}
-                                className="w-12 h-12 nft-gradient rounded-full flex items-center justify-center hover:scale-105 transition-transform active:scale-90 shadow-lg"
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                            </button>
-                        </div>
+                    <footer className="p-6 text-center text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">
+                        {status} | Network: Mainnet
                     </footer>
                 </div>
             );
@@ -164,5 +100,4 @@
     </script>
 </body>
 </html>
-
 
