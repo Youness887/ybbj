@@ -1,291 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Scraper & Money Maker Bot</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI NEXUS V8 - النظام المتكامل</title>
+    <!-- Tailwind CSS للابتكار البصري -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خطوط جوجل الاحترافية -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #020617;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        /* تحسين مظهر التمرير للهواتف */
+        ::-webkit-scrollbar { display: none; }
+        .glass-effect {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .nft-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        .bg-grid {
+            background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav>
-            <div class="container">
-                <div class="logo">
-                    <h1>BotHub</h1>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#bots">Bots</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+<body class="bg-grid">
+    <div id="root"></div>
 
-    <main>
-        <section id="home" class="hero">
-            <div class="container">
-                <h2>Professional Web Scraping & Money Making Bots</h2>
-                <p>Automate your business processes and maximize your profits with our advanced bot solutions</p>
-                <div class="cta-buttons">
-                    <button class="btn primary">Get Started</button>
-                    <button class="btn secondary">Learn More</button>
-                </div>
-            </div>
-        </section>
+    <!-- مكتبات React الأساسية -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-        <section id="features" class="features">
-            <div class="container">
-                <h2>Why Choose Our Bots?</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="icon">🤖</div>
-                        <h3>Automated Scraping</h3>
-                        <p>Extract data from websites automatically with our powerful web scraping technology</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="icon">💰</div>
-                        <h3>Money Making</h3>
-                        <p>Generate revenue through automated trading, affiliate marketing, and lead generation</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="icon">📊</div>
-                        <h3>Data Analysis</h3>
-                        <p>Process and analyze scraped data to identify profitable opportunities</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="icon">⚡</div>
-                        <h3>Real-time Processing</h3>
-                        <p>Get instant results with our high-speed data processing capabilities</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-        <section id="bots" class="bots-section">
-            <div class="container">
-                <h2>Our Bot Solutions</h2>
-                <div class="bots-grid">
-                    <div class="bot-card">
-                        <h3>Web Scraper Bot</h3>
-                        <p>Extract data from any website including:</p>
-                        <ul>
-                            <li>Business leads and prospects</li>
-                            <li>Product information and prices</li>
-                            <li>Real estate listings</li>
-                            <li>Job postings</li>
-                        </ul>
-                        <a href="web-scraper-bot.html" class="btn primary">Launch Bot</a>
-                    </div>
-                    <div class="bot-card">
-                        <h3>Money Maker Bot</h3>
-                        <p>Automated revenue generation through:</p>
-                        <ul>
-                            <li>Lead generation and sales</li>
-                            <li>Price monitoring and arbitrage</li>
-                            <li>Affiliate marketing automation</li>
-                            <li>Email marketing campaigns</li>
-                        </ul>
-                        <a href="money-maker-bot.html" class="btn primary">Launch Bot</a>
-                    </div>
-                    <div class="bot-card">
-                        <h3>Prospect Hunter</h3>
-                        <p>Find and qualify potential customers:</p>
-                        <ul>
-                            <li>Local business prospects</li>
-                            <li>Amazon seller prospects</li>
-                            <li>High-priority leads</li>
-                            <li>Personalized outreach</li>
-                        </ul>
-                        <a href="prospect-hunter-bot.html" class="btn primary">Launch Bot</a>
-                    </div>
-                </div>
-            </div>
-        </section>
+        function App() {
+            const [messages, setMessages] = useState([
+                { id: 1, role: 'assistant', content: 'تم تفعيل محرك Nexus V8 بنجاح. أنا الآن مرتبط بمستودع GitHub الخاص بك وجاهز لبدء العمل على الـ NFTs أو تحليل الأسواق.' }
+            ]);
+            const [input, setInput] = useState('');
+            const [mode, setMode] = useState('nft'); // nft, trading, marketing
+            const [isThinking, setIsThinking] = useState(false);
+            const scrollRef = useRef(null);
 
-        <section id="stats" class="stats">
-            <div class="container">
-                <h2>Real-Time Performance Stats</h2>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <h3 id="data-points-stat">25,847+</h3>
-                        <p>Data Points Scraped</p>
-                        <small>Updated in real-time</small>
-                    </div>
-                    <div class="stat-item">
-                        <h3 id="revenue-stat">$127,350+</h3>
-                        <p>Revenue Generated</p>
-                        <small>From bot operations</small>
-                    </div>
-                    <div class="stat-item">
-                        <h3 id="prospects-stat">1,247+</h3>
-                        <p>Active Prospects</p>
-                        <small>High-quality leads</small>
-                    </div>
-                    <div class="stat-item">
-                        <h3 id="uptime-stat">99.9%</h3>
-                        <p>Uptime</p>
-                        <small>Last 30 days</small>
-                    </div>
-                </div>
-            </div>
-        </section>
+            useEffect(() => {
+                scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages]);
 
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2>Get Started Today</h2>
-                <p>Ready to automate your business and increase your profits?</p>
-                <div class="contact-form">
-                    <form>
-                        <input type="text" placeholder="Your Name" required>
-                        <input type="email" placeholder="Your Email" required>
-                        <textarea placeholder="Tell us about your project" required></textarea>
-                        <button type="submit" class="btn primary">Send Message</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-    </main>
+            const handleAction = async () => {
+                if (!input.trim()) return;
+                
+                const userMsg = { id: Date.now(), role: 'user', content: input };
+                setMessages(prev => [...prev, userMsg]);
+                setInput('');
+                setIsThinking(true);
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 BotHub. All rights reserved.</p>
-        </div>
-    </footer>
+                // محاكاة استجابة الذكاء الاصطناعي (يمكن ربطها بـ Gemini API)
+                setTimeout(() => {
+                    let aiResp = "";
+                    if (mode === 'nft') aiResp = "جاري معالجة طلب الـ NFT... لقد تم تصميم العقد الذكي المبدئي لـ: " + input;
+                    else if (mode === 'trading') aiResp = "تحليل السوق يشير إلى اتجاه صاعد بناءً على البيانات المتوفرة في مستودعك.";
+                    else aiResp = "تم وضع الخطة التسويقية. هل ننتقل لتوليد المحتوى الإعلاني؟";
 
-    <!-- Payment System Scripts -->
-    <script src="js/payment-config.js"></script>
-    <script src="js/payment-integration.js"></script>
-    
-    <script>
-        // Enhanced JavaScript for smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        // Add loading indicator on button click (excluding payment buttons)
-        document.querySelectorAll('button:not(.subscribe-btn):not(.payment-option)').forEach(button => {
-            button.addEventListener('click', function() {
-                const loader = document.createElement('div');
-                loader.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(255, 255, 255, 0.8);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    font-size: 1.5rem;
-                    color: var(--primary-color);
-                    z-index: 1001;
-                    content: 'Loading...';
-                `;
-                document.body.appendChild(loader);
-                setTimeout(() => loader.remove(), 2000);
-            });
-        });
-
-        // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
-        });
-        
-        // Real-time statistics animation
-        function animateStats() {
-            const stats = {
-                'data-points-stat': { base: 25847, increment: () => Math.floor(Math.random() * 15) + 5 },
-                'revenue-stat': { base: 127350, increment: () => Math.floor(Math.random() * 250) + 50, prefix: '$', suffix: '+' },
-                'prospects-stat': { base: 1247, increment: () => Math.floor(Math.random() * 5) + 1, suffix: '+' }
+                    setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: aiResp }]);
+                    setIsThinking(false);
+                }, 1500);
             };
 
-            setInterval(() => {
-                Object.keys(stats).forEach(id => {
-                    const element = document.getElementById(id);
-                    if (element) {
-                        const stat = stats[id];
-                        stat.base += stat.increment();
-                        const prefix = stat.prefix || '';
-                        const suffix = stat.suffix || '';
-                        
-                        if (prefix === '$') {
-                            element.textContent = `${prefix}${stat.base.toLocaleString()}${suffix}`;
-                        } else {
-                            element.textContent = `${prefix}${stat.base.toLocaleString()}${suffix}`;
-                        }
-                        
-                        // Add flash effect
-                        element.style.color = '#27ae60';
-                        setTimeout(() => {
-                            element.style.color = '';
-                        }, 300);
-                    }
-                });
-            }, 8000 + Math.random() * 4000); // Random interval between 8-12 seconds
+            return (
+                <div className="flex flex-col h-screen max-w-xl mx-auto border-x border-slate-800 shadow-2xl relative bg-[#020617]/90">
+                    {/* رأس التطبيق الاحترافي */}
+                    <header className="p-5 glass-effect flex justify-between items-center sticky top-0 z-50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 nft-gradient rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            </div>
+                            <div>
+                                <h1 className="text-white font-black text-sm tracking-tight">AI NEXUS V8</h1>
+                                <p className="text-[9px] text-indigo-400 font-bold tracking-[0.2em] uppercase">Enterprise Cloud</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        </div>
+                    </header>
+
+                    {/* منطقة الرسائل والبيانات */}
+                    <main className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar pb-40">
+                        {messages.map((m) => (
+                            <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-start' : 'justify-end'} animate-in slide-in-from-bottom-2`}>
+                                <div className={`max-w-[90%] p-5 rounded-[2rem] text-sm leading-relaxed shadow-xl ${
+                                    m.role === 'user' 
+                                    ? 'bg-slate-800 text-slate-100 border border-slate-700 rounded-tr-none' 
+                                    : 'bg-white text-slate-900 font-bold rounded-tl-none'
+                                }`}>
+                                    {m.content}
+                                </div>
+                            </div>
+                        ))}
+                        {isThinking && (
+                            <div className="flex gap-2 p-3 bg-indigo-500/10 rounded-full w-fit animate-pulse border border-indigo-500/20">
+                                <span className="text-[10px] text-indigo-400 font-black px-2 uppercase tracking-widest">Processing Data...</span>
+                            </div>
+                        )}
+                        <div ref={scrollRef} />
+                    </main>
+
+                    {/* لوحة التحكم السفلية */}
+                    <footer className="fixed bottom-0 w-full max-w-xl p-6 bg-gradient-to-t from-[#020617] via-[#020617] to-transparent">
+                        {/* تبديل الأوضاع */}
+                        <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar py-1">
+                            {[
+                                { id: 'nft', label: 'NFT Creator', icon: '🎨' },
+                                { id: 'trading', label: 'Trading', icon: '📊' },
+                                { id: 'marketing', label: 'Marketing', icon: '🚀' }
+                            ].map(btn => (
+                                <button 
+                                    key={btn.id}
+                                    onClick={() => setMode(btn.id)}
+                                    className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase transition-all flex items-center gap-2 border ${
+                                        mode === btn.id ? 'bg-indigo-600 text-white border-indigo-400 shadow-xl shadow-indigo-500/30' : 'bg-slate-900 text-slate-500 border-slate-800'
+                                    }`}
+                                >
+                                    <span>{btn.icon}</span> {btn.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* صندوق الإدخال */}
+                        <div className="glass-effect rounded-[2.5rem] p-2 flex items-center shadow-2xl border-slate-700 focus-within:border-indigo-500 transition-all">
+                            <textarea 
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder={`اطلب من العميل تنفيذ مهمة في ${mode}...`}
+                                className="flex-1 bg-transparent px-5 py-3 outline-none text-sm resize-none h-14 text-white placeholder:text-slate-600"
+                            />
+                            <button 
+                                onClick={handleAction}
+                                className="w-12 h-12 nft-gradient rounded-full flex items-center justify-center hover:scale-105 transition-transform active:scale-90 shadow-lg"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </div>
+                    </footer>
+                </div>
+            );
         }
 
-        // Enhanced CTA button functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Start stats animation
-            animateStats();
-            
-            // Update crypto prices on page load
-            if (window.PaymentConfig && window.PaymentConfig.updateCryptoPrices) {
-                window.PaymentConfig.updateCryptoPrices();
-            }
-
-            // Add enhanced button interactions
-            const getStartedBtns = document.querySelectorAll('.btn.primary');
-            getStartedBtns.forEach(btn => {
-                if (btn.textContent.trim() === 'Get Started') {
-                    btn.addEventListener('click', function() {
-                        // Scroll to bots section
-                        document.getElementById('bots').scrollIntoView({ behavior: 'smooth' });
-                    });
-                }
-            });
-
-            const learnMoreBtns = document.querySelectorAll('.btn.secondary');
-            learnMoreBtns.forEach(btn => {
-                if (btn.textContent.trim() === 'Learn More') {
-                    btn.addEventListener('click', function() {
-                        // Scroll to features section
-                        document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
-                    });
-                }
-            });
-
-            // Add typing effect to hero text
-            const heroTitle = document.querySelector('.hero h2');
-            if (heroTitle) {
-                const text = heroTitle.textContent;
-                heroTitle.textContent = '';
-                let i = 0;
-                
-                function typeWriter() {
-                    if (i < text.length) {
-                        heroTitle.textContent += text.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, 50);
-                    }
-                }
-                
-                // Start typing after a brief delay
-                setTimeout(typeWriter, 500);
-            }
-        });
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
-    
-    <!-- Analytics & Monetization Systems -->
-    <script src="js/analytics-tracker.js"></script>
-    <script src="js/monetization-system.js"></script>
 </body>
 </html>
+
+
