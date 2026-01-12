@@ -1,66 +1,61 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-/**
- * @title AI Nexus NFT Collection
- * @dev عقد ذكي متكامل لصناعة الـ NFTs مع ميزات التحكم والندرة
- */
-
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NexusNFT is ERC721URIStorage, Ownable {
-    uint256 private _tokenIds;
-    uint256 public constant MAX_SUPPLY = 10000; // الحد الأقصى للمجموعة
-    uint256 public mintPrice = 0.05 ether; // سعر الصك (Mint Price)
+/**
+ * @title Nexus Lazy Minting Contract
+ * @dev عقد يتيح للمبدع توقيع الـ NFT دون دف غاز، والمشتري هو من يدفع عند الصك
+ */
+contract LazyNFT is ERC721URIStorage, EIP712, Ownable {
+    using ECDSA for bytes32;
 
-    // أحداث لتتبع العمليات
-    event NFTMinted(uint256 indexed tokenId, string tokenURI, address owner);
+    string private constant SIGNING_DOMAIN = "Nexus-LazyMint";
+    string private constant SIGNATURE_VERSION = "1";
 
-    constructor() ERC721("AI Nexus Collection", "NEXUS") Ownable(msg.sender) {}
+    constructor() 
+        ERC721("Nexus Lazy Assets", "LAZY") 
+        EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION) 
+        Ownable(msg.sender)
+    {}
+
+    struct NFTVoucher {
+        uint256 minPrice;
+        string uri;
+        bytes signature;
+    }
 
     /**
-     * @dev وظيفة صك (Mint) NFT جديد
-     * @param player عنوان المحفظة التي ستستلم الـ NFT
-     * @param tokenURI رابط البيانات الوصفية (JSON) المخزن على IPFS
+     * @dev وظيفة الشراء والصك الفعلي (يدفعها المشتري)
      */
-    function mintNFT(address player, string memory tokenURI)
-        public
-        payable
-        returns (uint256)
-    {
-        require(_tokenIds < MAX_SUPPLY, "Reached maximum supply");
-        require(msg.value >= mintPrice, "Not enough ETH sent");
+    function redeem(address redeemer, NFTVoucher calldata voucher) public payable returns (uint256) {
+        address signer = _verify(voucher);
 
-        _tokenIds++;
-        uint256 newItemId = _tokenIds;
+        // التأكد من أن الموقع هو مالك العقد (أو مسموح له)
+        require(signer == owner(), "Signature invalid or unauthorized");
+        require(msg.value >= voucher.minPrice, "Insufficient funds sent");
+
+        uint256 tokenId = uint256(keccak256(abi.encodePacked(voucher.uri)));
         
-        _mint(player, newItemId);
-        _setTokenURI(newItemId, tokenURI);
+        _mint(redeemer, tokenId);
+        _setTokenURI(tokenId, voucher.uri);
 
-        emit NFTMinted(newItemId, tokenURI, player);
+        // تحويل الأموال للمبدع
+        payable(signer).transfer(msg.value);
 
-        return newItemId;
+        return tokenId;
     }
 
-    /**
-     * @dev تغيير سعر الصك (للمالك فقط)
-     */
-    function setMintPrice(uint256 _newPrice) public onlyOwner {
-        mintPrice = _newPrice;
-    }
-
-    /**
-     * @dev سحب الأرباح من العقد (للمالك فقط)
-     */
-    function withdraw() public onlyOwner {
-        uint256 balance = address(this).balance;
-        require(balance > 0, "No balance to withdraw");
-        payable(owner()).transfer(balance);
-    }
-
-    // وظائف إضافية للحصول على إجمالي العدد
-    function totalSupply() public view returns (uint256) {
-        return _tokenIds;
+    function _verify(NFTVoucher calldata voucher) internal view returns (address) {
+        bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
+            keccak256("NFTVoucher(uint256 minPrice,string uri)"),
+            voucher.minPrice,
+            keccak256(bytes(voucher.uri))
+        )));
+        return digest.recover(voucher.signature);
     }
 }
