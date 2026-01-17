@@ -2,155 +2,204 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus V8 - Fix Signing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus V8 - القائد الرقمي</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #020617; color: #e2e8f0; }
-        .nexus-btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); transition: all 0.3s ease; }
-        .nexus-btn:active { transform: scale(0.95); }
-        .glass-box { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;600;700&display=swap');
+        body { font-family: 'IBM+Plex+Sans+Arabic', sans-serif; background-color: #020617; color: #e2e8f0; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px border rgba(255,255,255,0.05); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="bg-slate-950">
-    <div id="root"></div>
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Header -->
+    <header class="p-4 border-b border-white/5 glass flex justify-between items-center z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <i data-lucide="cpu" class="text-white w-5 h-5"></i>
+            </div>
+            <h1 class="text-xs font-black tracking-tighter text-white uppercase italic">Nexus V8.1 Stable</h1>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="switchTab('chat')" id="btn-chat" class="px-5 py-1.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white transition-all">القيادة</button>
+            <button onclick="switchTab('gallery')" id="btn-gallery" class="px-5 py-1.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 transition-all">المعرض</button>
+            <button onclick="toggleSettings()" class="p-2 bg-slate-800 rounded-lg hover:bg-slate-700 transition-all">
+                <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+            </button>
+        </div>
+    </header>
 
-    <script type="text/babel">
-        const { useState } = React;
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-6">
+        <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-in zoom-in-95">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-sm font-black text-white uppercase italic flex items-center gap-2">
+                    <i data-lucide="shield" class="w-4 h-4 text-indigo-500"></i> إعدادات الربط
+                </h2>
+                <button onclick="toggleSettings()"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-4">
+                <p class="text-[10px] text-slate-500 leading-relaxed">أدخل مفتاح Gemini API الخاص بك لتفعيل التوليد بالذكاء الاصطناعي.</p>
+                <input type="password" id="api-key-input" placeholder="Paste your API key here..." 
+                       class="w-full bg-black border border-white/10 rounded-xl py-3 px-4 text-xs outline-none focus:border-indigo-500 text-white">
+                <button onclick="saveApiKey()" class="w-full bg-indigo-600 py-3 rounded-xl text-xs font-black text-white hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20">حفظ الإعدادات</button>
+            </div>
+        </div>
+    </div>
 
-        function App() {
-            const [account, setAccount] = useState(null);
-            const [isSigning, setIsSigning] = useState(false);
-            const [voucher, setVoucher] = useState(null);
-            const [debugInfo, setDebugInfo] = useState('');
+    <!-- Main Content -->
+    <main id="chat-tab" class="flex-1 overflow-y-auto p-4 md:p-10 space-y-6 pb-32 no-scrollbar">
+        <div class="text-center py-20 opacity-20" id="welcome-msg">
+            <i data-lucide="sparkles" class="w-12 h-12 mx-auto mb-4 text-indigo-500"></i>
+            <h3 class="text-lg font-black italic">نظام Nexus جاهز للعمل</h3>
+            <p class="text-[10px] mt-2">قم بربط الـ API وابدأ بصناعة أصولك الرقمية</p>
+        </div>
+        <div id="chat-messages" class="space-y-6"></div>
+    </main>
 
-            const connectWallet = async () => {
-                if (!window.ethereum) return alert("يرجى فتح الموقع من متصفح MetaMask");
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    setAccount(accounts[0]);
-                    setDebugInfo('تم ربط المحفظة بنجاح');
-                } catch (e) {
-                    setDebugInfo('فشل الاتصال بالمحفظة');
-                }
-            };
+    <main id="gallery-tab" class="hidden flex-1 overflow-y-auto p-6 md:p-10 animate-in fade-in duration-500">
+        <h2 class="text-2xl font-black italic mb-8">المعرض الرقمي</h2>
+        <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    </main>
 
-            const createLazyNFT = async () => {
-                if (!account) return alert("اربط المحفظة أولاً");
-                setIsSigning(true);
-                setDebugInfo('جاري طلب التوقيع من MetaMask...');
+    <!-- Footer Input -->
+    <footer class="p-4 glass border-t border-white/5">
+        <div class="max-w-3xl mx-auto relative flex items-center">
+            <input type="text" id="user-input" placeholder="اطلب تصميم 'عملة ذهبية باسم يونس'..." 
+                   class="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-6 pr-14 text-xs outline-none focus:border-indigo-500 text-white transition-all shadow-2xl">
+            <button onclick="handleSend()" class="absolute left-2 p-3 bg-indigo-600 rounded-xl text-white hover:bg-indigo-500 shadow-xl transition-all">
+                <i data-lucide="send" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </footer>
 
-                try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const signer = provider.getSigner();
-                    
-                    // الحصول على ChainId الحالي من المحفظة لمنع تعارض الشبكات
-                    const { chainId } = await provider.getNetwork();
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
 
-                    const minPrice = ethers.utils.parseEther("0.01"); 
-                    const uri = "ipfs://nexus-v8-initial-asset"; 
-                    
-                    // بيانات النطاق - يجب أن تتطابق مع العقد الذكي
-                    const domain = {
-                        name: "Nexus-LazyMint",
-                        version: "1",
-                        chainId: chainId,
-                        verifyingContract: "0x0000000000000000000000000000000000000000" // عنوان افتراضي للتجربة
-                    };
+        let apiKey = localStorage.getItem('nexus_api_key') || '';
+        let inventory = JSON.parse(localStorage.getItem('nexus_inventory')) || [];
 
-                    const types = {
-                        NFTVoucher: [
-                            { name: "minPrice", type: "uint256" },
-                            { name: "uri", type: "string" }
-                        ]
-                    };
-
-                    const value = { minPrice, uri };
-
-                    // تنفيذ التوقيع الرقمي (EIP-712)
-                    const signature = await signer._signTypedData(domain, types, value);
-                    
-                    setVoucher({ ...value, signature });
-                    setDebugInfo('تم التوقيع بنجاح! العمل جاهز للعرض.');
-                } catch (err) {
-                    console.error(err);
-                    setDebugInfo('خطأ: تأكد من قبول طلب التوقيع في MetaMask');
-                } finally {
-                    setIsSigning(false);
-                }
-            };
-
-            return (
-                <div className="flex flex-col min-h-screen max-w-md mx-auto bg-slate-950 p-6 space-y-6">
-                    <header className="flex justify-between items-center py-4">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 nexus-btn rounded-lg shadow-[0_0_15px_rgba(79,70,229,0.5)]"></div>
-                            <h1 className="text-lg font-black text-white tracking-tighter">NEXUS V8</h1>
-                        </div>
-                        <button onClick={connectWallet} className="text-[10px] font-bold px-4 py-2 rounded-full border border-slate-800 bg-slate-900/50">
-                            {account ? `${account.substring(0,6)}...${account.substring(38)}` : 'Connect Wallet'}
-                        </button>
-                    </header>
-
-                    <div className="glass-box rounded-[2.5rem] p-8 text-center space-y-6 shadow-2xl border-indigo-500/20">
-                        <div className="relative w-32 h-32 mx-auto">
-                            <div className="absolute inset-0 bg-indigo-600 blur-3xl opacity-20 animate-pulse"></div>
-                            <div className="relative w-full h-full bg-slate-900 rounded-full flex items-center justify-center border border-slate-800 shadow-inner">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h2 className="text-xl font-black text-white leading-tight italic">LAZY MINTING ENGINE</h2>
-                            <p className="text-slate-500 text-xs leading-relaxed px-4">قم بتوقيع عملك فنياً الآن مجاناً. سيتم تسجيله في البلوكشين عند أول عملية بيع.</p>
-                        </div>
-                        
-                        <div className="pt-4 space-y-3">
-                            <button 
-                                onClick={createLazyNFT}
-                                disabled={isSigning || !account}
-                                className="w-full py-4 rounded-2xl nexus-btn text-white font-black shadow-lg shadow-indigo-600/20 disabled:opacity-30 disabled:grayscale transition-all"
-                            >
-                                {isSigning ? 'جاري طلب التوقيع...' : 'توقيع NFT مجاني'}
-                            </button>
-                            
-                            <p className={`text-[10px] font-bold uppercase tracking-widest ${debugInfo.includes('خطأ') ? 'text-red-400' : 'text-indigo-400'}`}>
-                                {debugInfo}
-                            </p>
-                        </div>
-                    </div>
-
-                    {voucher && (
-                        <div className="p-5 bg-indigo-500/5 border border-indigo-500/10 rounded-3xl space-y-3 animate-in fade-in zoom-in-95">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                                <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest">Voucher Generated</span>
-                            </div>
-                            <div className="bg-black/40 p-3 rounded-xl">
-                                <p className="text-[8px] font-mono text-slate-500 break-all leading-relaxed">
-                                    <span className="text-slate-300">Signature:</span><br/>
-                                    {voucher.signature}
-                                </p>
-                            </div>
-                            <p className="text-[9px] text-slate-500 text-center font-bold italic">هذا التوقيع لا يتطلب دفع غاز. احفظه لعرضه في المتجر.</p>
-                        </div>
-                    )}
-
-                    <footer className="mt-auto py-6 text-center">
-                        <p className="text-[8px] text-slate-700 font-bold uppercase tracking-[0.4em]">Powered by Nexus V8 Polygon Protocol</p>
-                    </footer>
-                </div>
-            );
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.toggle('hidden');
+            document.getElementById('api-key-input').value = apiKey;
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        function saveApiKey() {
+            apiKey = document.getElementById('api-key-input').value;
+            localStorage.setItem('nexus_api_key', apiKey);
+            toggleSettings();
+        }
+
+        function switchTab(tab) {
+            const chatTab = document.getElementById('chat-tab');
+            const galleryTab = document.getElementById('gallery-tab');
+            const btnChat = document.getElementById('btn-chat');
+            const btnGallery = document.getElementById('btn-gallery');
+
+            if (tab === 'chat') {
+                chatTab.classList.remove('hidden');
+                galleryTab.classList.add('hidden');
+                btnChat.className = "px-5 py-1.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white transition-all";
+                btnGallery.className = "px-5 py-1.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 transition-all";
+            } else {
+                chatTab.classList.add('hidden');
+                galleryTab.classList.remove('hidden');
+                btnGallery.className = "px-5 py-1.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white transition-all";
+                btnChat.className = "px-5 py-1.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 transition-all";
+                renderGallery();
+            }
+        }
+
+        async function handleSend() {
+            const inputEl = document.getElementById('user-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+            if (!apiKey) { toggleSettings(); return; }
+
+            addMessage('user', text);
+            inputEl.value = '';
+            document.getElementById('welcome-msg').classList.add('hidden');
+
+            const loadingId = addMessage('assistant', 'جاري التفكير والتوليد...');
+
+            try {
+                // Gemini Text Request
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+                });
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                let imageHtml = '';
+                // Simple Image Logic
+                if (text.includes('يونس') || text.includes('صورة') || text.includes('NFT')) {
+                    const imgRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            instances: { prompt: `Golden 3D NFT coin, name 'Younes' engraved, cinematic lighting, luxury` },
+                            parameters: { sampleCount: 1 }
+                        })
+                    });
+                    const imgData = await imgRes.imgRes.json();
+                    const b64 = imgData.predictions[0].bytesBase64Encoded;
+                    const imageUrl = `data:image/png;base64,${b64}`;
+                    
+                    imageHtml = `<img src="${imageUrl}" class="mt-4 rounded-2xl w-full border border-white/10 shadow-2xl">`;
+                    
+                    // Save to Inventory
+                    inventory.unshift({ id: Date.now(), image: imageUrl, name: text.substring(0, 20) });
+                    localStorage.setItem('nexus_inventory', JSON.stringify(inventory));
+                }
+
+                updateMessage(loadingId, aiText + imageHtml);
+            } catch (err) {
+                updateMessage(loadingId, "خطأ: تأكد من صحة مفتاح API ومن اتصالك بالإنترنت.");
+            }
+        }
+
+        function addMessage(role, content) {
+            const id = Date.now();
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`;
+            div.innerHTML = `
+                <div id="msg-${id}" class="max-w-[85%] p-4 rounded-2xl text-xs leading-relaxed shadow-xl ${role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-900 border border-white/5 rounded-tl-none'}">
+                    ${content}
+                </div>
+            `;
+            container.appendChild(div);
+            div.scrollIntoView({ behavior: 'smooth' });
+            return id;
+        }
+
+        function updateMessage(id, content) {
+            const el = document.getElementById(`msg-${id}`);
+            if (el) el.innerHTML = content;
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = inventory.map(item => `
+                <div class="bg-slate-900 rounded-[2rem] border border-white/5 overflow-hidden hover:border-indigo-500/50 transition-all shadow-xl group">
+                    <img src="${item.image}" class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-4">
+                        <p class="text-[10px] font-black text-white uppercase truncate">${item.name}</p>
+                        <p class="text-[8px] text-slate-500 mt-1 uppercase tracking-widest">Digital Asset</p>
+                    </div>
+                </div>
+            `).join('');
+            if (inventory.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center opacity-20 uppercase font-black text-xs italic tracking-widest">المعرض فارغ حالياً</div>`;
+            }
+        }
     </script>
 </body>
 </html>
