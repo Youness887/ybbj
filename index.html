@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus Telegram Bot</title>
-    <!-- Telegram Web App SDK -->
+    <title>Nexus Telegram AI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -13,7 +12,7 @@
         :root {
             --tg-theme-bg-color: #020617;
             --tg-theme-text-color: #ffffff;
-            --tg-theme-button-color: #4f46e5;
+            --tg-theme-button-color: #6366f1;
         }
         body { 
             font-family: 'Cairo', sans-serif; 
@@ -31,23 +30,23 @@
     <header class="p-4 border-b border-white/10 flex justify-between items-center bg-slate-900/50 backdrop-blur-md">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
-                <i data-lucide="bot" class="text-white w-5 h-5"></i>
+                <i data-lucide="zap" class="text-white w-5 h-5"></i>
             </div>
             <div>
-                <h1 id="user-name" class="text-[12px] font-black uppercase italic">Nexus AI</h1>
-                <p class="text-[8px] text-slate-400">Telegram Edition v8.3</p>
+                <h1 id="user-name" class="text-[12px] font-black uppercase italic">Nexus AI PRO</h1>
+                <p class="text-[8px] text-slate-400">Telegram Stable v8.4</p>
             </div>
         </div>
         <button onclick="openSettings()" class="p-2 bg-slate-800 rounded-full active:scale-90 transition-all">
-            <i data-lucide="settings-2" class="w-4 h-4 text-slate-300"></i>
+            <i data-lucide="settings" class="w-4 h-4 text-slate-300"></i>
         </button>
     </header>
 
-    <!-- Chat Container -->
+    <!-- Chat Area -->
     <main id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 pb-24 no-scrollbar">
         <div id="messages" class="space-y-4">
             <div class="bg-indigo-600/10 border border-indigo-500/20 p-4 rounded-2xl text-[11px] leading-relaxed text-indigo-200">
-                مرحباً بك في نظام Nexus عبر تيليجرام. يرجى إدخال مفتاح Gemini الخاص بك في الإعدادات للبدء.
+                مرحباً بك! تم تحديث نظام الاتصال لتفادي خطأ "Model not found". يرجى التأكد من إدخال مفتاح API صالح.
             </div>
         </div>
     </main>
@@ -71,27 +70,21 @@
                 <button onclick="closeSettings()"><i data-lucide="x" class="w-6 h-6 text-slate-400"></i></button>
             </div>
             <div class="space-y-4">
-                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Google Gemini API Key</label>
-                <input type="password" id="api-key" placeholder="AIzaSy..." 
+                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Google AI Key</label>
+                <input type="password" id="api-key" placeholder="ألصق مفتاح AIza..." 
                        class="w-full bg-black border border-white/10 rounded-xl py-4 px-6 text-xs outline-none text-white text-left">
-                <button onclick="saveKey()" class="w-full tg-button py-4 rounded-xl text-xs font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-600/20">حفظ وتنشيط</button>
-                <p class="text-[9px] text-slate-500 text-center">يتم حفظ المفتاح محلياً في ذاكرة جهازك فقط.</p>
+                <button onclick="saveKey()" class="w-full tg-button py-4 rounded-xl text-xs font-black text-white uppercase tracking-widest">تنشيط المفتاح</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Telegram WebApp Initialization
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name + " Nexus";
-        }
-
         lucide.createIcons();
-        let apiKey = localStorage.getItem('tg_gemini_key_v83') || '';
+        let apiKey = localStorage.getItem('tg_key_v84') || '';
 
         function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); }
         function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
@@ -100,11 +93,21 @@
             const val = document.getElementById('api-key').value.trim();
             if (val) {
                 apiKey = val;
-                localStorage.setItem('tg_gemini_key_v83', apiKey);
+                localStorage.setItem('tg_key_v84', apiKey);
                 closeSettings();
-                tg.HapticFeedback.notificationOccurred('success');
-                appendMessage('bot', '✅ تم تحديث المفتاح وتنشيط النظام.');
+                appendMessage('bot', '✅ تم تحديث الاتصال بنجاح.');
             }
+        }
+
+        async function fetchGemini(text, modelName) {
+            // استخدام رابط v1 بدلاً من v1beta لمزيد من الاستقرار
+            const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+            });
+            return await response.json();
         }
 
         async function handleInput(e) {
@@ -116,30 +119,26 @@
 
             appendMessage('user', text);
             input.value = '';
-            tg.HapticFeedback.impactOccurred('medium');
-
-            const loadingId = appendMessage('bot', 'جاري التواصل مع الخادم...');
+            const loadingId = appendMessage('bot', 'جاري المعالجة...');
 
             try {
-                // استخدام الموديل المستقر gemini-1.5-flash-latest
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-                });
-
-                const data = await response.json();
+                // المحاولة الأولى: الموديل السريع
+                let data = await fetchGemini(text, 'gemini-1.5-flash');
                 
+                // إذا كان هناك خطأ "Not Found"، جرب الموديل الثاني تلقائياً
+                if (data.error && (data.error.message.includes("not found") || data.error.status === "INVALID_ARGUMENT")) {
+                    console.log("Switching to fallback model...");
+                    data = await fetchGemini(text, 'gemini-pro');
+                }
+
                 if (data.error) {
                     updateMessage(loadingId, `❌ خطأ API: ${data.error.message}`);
-                } else if (data.candidates && data.candidates[0].content) {
+                } else if (data.candidates) {
                     const aiText = data.candidates[0].content.parts[0].text;
                     updateMessage(loadingId, aiText);
-                } else {
-                    updateMessage(loadingId, "⚠️ لم يتم استلام استجابة صالحة.");
                 }
             } catch (err) {
-                updateMessage(loadingId, "❌ فشل الاتصال. تأكد من جودة الإنترنت.");
+                updateMessage(loadingId, "❌ فشل الاتصال. تأكد من إعدادات المفتاح.");
             }
         }
 
@@ -147,15 +146,14 @@
             const id = Date.now();
             const messagesDiv = document.getElementById('messages');
             const div = document.createElement('div');
-            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`;
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
             div.innerHTML = `
-                <div id="msg-${id}" class="max-w-[85%] p-3 rounded-2xl text-[12px] shadow-lg ${role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 border border-white/5 text-white rounded-tl-none'}">
+                <div id="msg-${id}" class="max-w-[85%] p-3 rounded-2xl text-[12px] shadow-lg ${role === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-800 border border-white/5 text-white'}">
                     ${content}
                 </div>
             `;
             messagesDiv.appendChild(div);
-            const container = document.getElementById('chat-container');
-            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            document.getElementById('chat-container').scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
             return id;
         }
 
