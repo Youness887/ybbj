@@ -3,51 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <title>مونة البيت</title>
-  <style>
-    body { font-family: Tahoma, sans-serif; background: #f9f9f9; text-align: center; }
-    h1 { color: #4CAF50; }
-    input, button { padding: 10px; margin: 5px; }
-    ul { list-style: none; padding: 0; }
-    li { background: #fff; margin: 5px; padding: 10px; border-radius: 5px; cursor: pointer; }
-  </style>
+  <!-- إضافة Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-  <h1>📦 قائمة المونة</h1>
-  <input type="text" id="itemInput" placeholder="أضف عنصر جديد">
-  <button onclick="addItem()">➕ إضافة</button>
-  <ul id="itemList"></ul>
+<body class="bg-light text-center p-4">
+  <h1 class="text-success mb-4">📦 قائمة المونة</h1>
+
+  <!-- إدخال عنصر جديد -->
+  <div class="input-group mb-3 w-50 mx-auto">
+    <input type="text" id="itemInput" class="form-control" placeholder="أضف عنصر جديد">
+    <input type="number" id="qtyInput" class="form-control" placeholder="الكمية" min="1" value="1">
+    <select id="categoryInput" class="form-select">
+      <option value="مواد أساسية">مواد أساسية</option>
+      <option value="خضر">خضر</option>
+      <option value="لحوم">لحوم</option>
+      <option value="مشروبات">مشروبات</option>
+    </select>
+    <button class="btn btn-success" onclick="addItem()">➕ إضافة</button>
+  </div>
+
+  <!-- القائمة -->
+  <ul id="itemList" class="list-group w-50 mx-auto"></ul>
 
   <script>
     // تحميل القائمة من التخزين المحلي
     function loadItems() {
-      const saved = JSON.parse(localStorage.getItem("mounaList")) || ["سكر", "زيت", "دقيق", "أرز"];
+      const saved = JSON.parse(localStorage.getItem("mounaList")) || [
+        {name:"سكر", qty:1, category:"مواد أساسية"},
+        {name:"زيت", qty:1, category:"مواد أساسية"},
+        {name:"دقيق", qty:2, category:"مواد أساسية"},
+        {name:"أرز", qty:1, category:"مواد أساسية"},
+        {name:"شاي", qty:1, category:"مشروبات"},
+        {name:"حليب", qty:2, category:"مشروبات"}
+      ];
       const list = document.getElementById("itemList");
       list.innerHTML = "";
       saved.forEach(item => {
         const li = document.createElement("li");
-        li.textContent = item;
-        li.onclick = () => removeItem(item);
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+        li.innerHTML = `${item.name} - ${item.qty} (${item.category})
+          <button class="btn btn-sm btn-danger" onclick="removeItem('${item.name}')">🗑 حذف</button>`;
         list.appendChild(li);
       });
     }
 
     // إضافة عنصر جديد
     function addItem() {
-      const input = document.getElementById("itemInput");
-      const item = input.value.trim();
-      if(item !== "") {
+      const name = document.getElementById("itemInput").value.trim();
+      const qty = parseInt(document.getElementById("qtyInput").value);
+      const category = document.getElementById("categoryInput").value;
+      if(name !== "" && qty > 0) {
         const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-        saved.push(item);
+        saved.push({name, qty, category});
         localStorage.setItem("mounaList", JSON.stringify(saved));
-        input.value = "";
+        document.getElementById("itemInput").value = "";
+        document.getElementById("qtyInput").value = 1;
         loadItems();
       }
     }
 
     // حذف عنصر
-    function removeItem(item) {
+    function removeItem(name) {
       let saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-      saved = saved.filter(i => i !== item);
+      saved = saved.filter(i => i.name !== name);
       localStorage.setItem("mounaList", JSON.stringify(saved));
       loadItems();
     }
