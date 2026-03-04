@@ -1,150 +1,34 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus AI Morocco</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #020617; color: #fff; margin: 0; overflow: hidden; }
-        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
+  <meta charset="UTF-8">
+  <title>مونة البيت</title>
+  <style>
+    body { font-family: Tahoma, sans-serif; background: #f9f9f9; text-align: center; }
+    h1 { color: #4CAF50; }
+    input, button { padding: 10px; margin: 5px; }
+    ul { list-style: none; padding: 0; }
+    li { background: #fff; margin: 5px; padding: 10px; border-radius: 5px; }
+  </style>
 </head>
-<body class="flex flex-col h-screen">
+<body>
+  <h1>📦 قائمة المونة</h1>
+  <input type="text" id="itemInput" placeholder="أضف عنصر جديد">
+  <button onclick="addItem()">➕ إضافة</button>
+  <ul id="itemList"></ul>
 
-    <!-- Header -->
-    <header class="p-4 glass flex justify-between items-center z-50 shrink-0">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <i data-lucide="brain-circuit" class="text-white w-6 h-6"></i>
-            </div>
-            <div>
-                <h1 class="text-sm font-black uppercase tracking-tighter italic">Nexus Engine</h1>
-                <div class="flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">متصل من المغرب</span>
-                </div>
-            </div>
-        </div>
-        <button onclick="openSettings()" class="p-2.5 bg-slate-800 rounded-xl active:scale-90 transition-all">
-            <i data-lucide="key" class="w-5 h-5 text-indigo-400"></i>
-        </button>
-    </header>
-
-    <!-- Chat Area -->
-    <main id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 pb-28 no-scrollbar"></main>
-
-    <!-- Input Area -->
-    <div class="fixed bottom-0 left-0 right-0 p-4 bg-slate-900/90 backdrop-blur-xl border-t border-white/5">
-        <form onsubmit="handleChat(event)" class="max-w-2xl mx-auto flex gap-2">
-            <input type="text" id="user-input" placeholder="اسأل Nexus عن أي شيء..." 
-                   class="flex-1 bg-slate-800 border border-white/10 rounded-2xl py-4 px-6 text-sm outline-none text-white focus:border-indigo-500 transition-all shadow-inner">
-            <button type="submit" class="p-4 bg-indigo-600 rounded-2xl text-white shadow-xl active:scale-95 transition-all">
-                <i data-lucide="send-horizonal" class="w-6 h-6"></i>
-            </button>
-        </form>
-    </div>
-
-    <!-- Settings Overlay -->
-    <div id="settings-modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6">
-        <div class="bg-slate-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-lg font-bold text-white italic">إعدادات API</h2>
-                <button onclick="closeSettings()"><i data-lucide="x" class="w-6 h-6 text-slate-500"></i></button>
-            </div>
-            <div class="space-y-6">
-                <div class="p-4 bg-indigo-600/10 rounded-2xl border border-indigo-500/20 text-center">
-                    <p class="text-[10px] text-indigo-300 font-bold mb-2 uppercase">Google AI Studio (Morocco)</p>
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-[10px] text-white underline font-black">احصل على مفتاحك المجاني من هنا</a>
-                </div>
-                <div>
-                    <label class="text-[10px] text-slate-500 uppercase font-black mb-2 block px-1 tracking-widest">API Key</label>
-                    <input type="password" id="api-key" placeholder="AIzaSy..." 
-                           class="w-full bg-black border border-white/10 rounded-2xl py-4 px-6 text-xs text-white text-left outline-none focus:border-indigo-500">
-                </div>
-                <button onclick="saveKey()" class="w-full bg-indigo-600 py-4 rounded-2xl text-[11px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-600/30">تفعيل النظام</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); lucide.createIcons();
-
-        let currentKey = localStorage.getItem('nexus_key_ma') || '';
-
-        function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
-
-        function saveKey() {
-            const val = document.getElementById('api-key').value.trim();
-            if (val) {
-                currentKey = val;
-                localStorage.setItem('nexus_key_ma', currentKey);
-                closeSettings();
-                tg.HapticFeedback.notificationOccurred('success');
-                addMessage('bot', '✅ تم تفعيل المفتاح بنجاح. أنا الآن جاهز للخدمة في المغرب!');
-            }
-        }
-
-        async function handleChat(e) {
-            e.preventDefault();
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            if (!text) return;
-            if (!currentKey) { openSettings(); return; }
-
-            addMessage('user', text);
-            input.value = '';
-            const loadingId = addMessage('bot', 'جاري التفكير...');
-
-            try {
-                // استخدام الموديل المستقر gemini-1.5-flash مع مسار v1
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${currentKey}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-                });
-
-                const data = await response.json();
-
-                if (data.error) {
-                    updateMessage(loadingId, `⚠️ خطأ: ${data.error.message}`);
-                } else {
-                    const reply = data.candidates[0].content.parts[0].text;
-                    updateMessage(loadingId, reply);
-                }
-            } catch (err) {
-                updateMessage(loadingId, "❌ فشل الاتصال. تأكد من جودة الإنترنت أو صحة المفتاح.");
-            }
-        }
-
-        function addMessage(role, content) {
-            const id = Date.now();
-            const container = document.getElementById('chat-container');
-            const div = document.createElement('div');
-            div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`;
-            div.innerHTML = `
-                <div id="msg-${id}" class="max-w-[85%] p-4 rounded-2xl text-[13px] leading-relaxed shadow-xl ${role === 'user' ? 'bg-indigo-600 text-white font-medium rounded-tr-none' : 'bg-slate-900 border border-white/5 text-slate-100 rounded-tl-none'}">
-                    ${content}
-                </div>
-            `;
-            container.appendChild(div);
-            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-            return id;
-        }
-
-        function updateMessage(id, content) {
-            const el = document.getElementById(`msg-${id}`);
-            if (el) el.innerHTML = content.replace(/\n/g, '<br>');
-        }
-    </script>
+  <script>
+    function addItem() {
+      const input = document.getElementById("itemInput");
+      const item = input.value.trim();
+      if(item !== "") {
+        const li = document.createElement("li");
+        li.textContent = item;
+        li.onclick = () => li.remove(); // اضغط على العنصر لحذفه
+        document.getElementById("itemList").appendChild(li);
+        input.value = "";
+      }
+    }
+  </script>
 </body>
 </html>
-
