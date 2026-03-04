@@ -23,7 +23,12 @@
   </div>
 
   <!-- القائمة -->
-  <ul id="itemList" class="list-group w-50 mx-auto"></ul>
+  <ul id="itemList" class="list-group w-50 mx-auto mb-3"></ul>
+
+  <!-- أزرار التصدير والمشاركة -->
+  <button class="btn btn-primary me-2" onclick="exportPDF()">📄 تصدير إلى PDF</button>
+  <button class="btn btn-warning me-2" onclick="exportCSV()">📊 تصدير إلى Excel (CSV)</button>
+  <button class="btn btn-info" onclick="shareEmail()">📧 مشاركة عبر البريد الإلكتروني</button>
 
   <script>
     // تحميل القائمة من التخزين المحلي
@@ -68,6 +73,51 @@
       saved = saved.filter(i => i.name !== name);
       localStorage.setItem("mounaList", JSON.stringify(saved));
       loadItems();
+    }
+
+    // تصدير إلى PDF
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("helvetica", "bold");
+      doc.text("📦 قائمة المونة", 10, 10);
+
+      const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
+      let y = 20;
+      saved.forEach(item => {
+        doc.text(`${item.name} - ${item.qty} (${item.category})`, 10, y);
+        y += 10;
+      });
+
+      doc.save("mouna-list.pdf");
+    }
+
+    // تصدير إلى CSV (Excel)
+    function exportCSV() {
+      const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
+      let csvContent = "اسم العنصر,الكمية,التصنيف\n";
+      saved.forEach(item => {
+        csvContent += `${item.name},${item.qty},${item.category}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "mouna-list.csv";
+      link.click();
+    }
+
+    // مشاركة عبر البريد الإلكتروني
+    function shareEmail() {
+      const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
+      let emailBody = "📦 قائمة المونة:\n\n";
+      saved.forEach(item => {
+        emailBody += `${item.name} - ${item.qty} (${item.category})\n`;
+      });
+
+      const subject = "قائمة المونة";
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      window.location.href = mailtoLink;
     }
 
     // تحميل القائمة عند فتح الصفحة
