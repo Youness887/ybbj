@@ -8,7 +8,7 @@
     h1 { color: #4CAF50; }
     input, button { padding: 10px; margin: 5px; }
     ul { list-style: none; padding: 0; }
-    li { background: #fff; margin: 5px; padding: 10px; border-radius: 5px; }
+    li { background: #fff; margin: 5px; padding: 10px; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -18,17 +18,42 @@
   <ul id="itemList"></ul>
 
   <script>
+    // تحميل القائمة من التخزين المحلي
+    function loadItems() {
+      const saved = JSON.parse(localStorage.getItem("mounaList")) || ["سكر", "زيت", "دقيق", "أرز"];
+      const list = document.getElementById("itemList");
+      list.innerHTML = "";
+      saved.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        li.onclick = () => removeItem(item);
+        list.appendChild(li);
+      });
+    }
+
+    // إضافة عنصر جديد
     function addItem() {
       const input = document.getElementById("itemInput");
       const item = input.value.trim();
       if(item !== "") {
-        const li = document.createElement("li");
-        li.textContent = item;
-        li.onclick = () => li.remove(); // اضغط على العنصر لحذفه
-        document.getElementById("itemList").appendChild(li);
+        const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
+        saved.push(item);
+        localStorage.setItem("mounaList", JSON.stringify(saved));
         input.value = "";
+        loadItems();
       }
     }
+
+    // حذف عنصر
+    function removeItem(item) {
+      let saved = JSON.parse(localStorage.getItem("mounaList")) || [];
+      saved = saved.filter(i => i !== item);
+      localStorage.setItem("mounaList", JSON.stringify(saved));
+      loadItems();
+    }
+
+    // تحميل القائمة عند فتح الصفحة
+    window.onload = loadItems;
   </script>
 </body>
 </html>
