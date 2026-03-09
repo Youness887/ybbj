@@ -1,127 +1,449 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>مونة البيت</title>
-  <!-- إضافة Bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>مدونة تقنية احترافية</title>
+
+<style>
+
+/* ===== تصميم عام ===== */
+
+body{
+font-family:Arial;
+margin:0;
+background:#f4f4f4;
+direction:rtl;
+transition:0.3s;
+}
+
+.dark{
+background:#121212;
+color:white;
+}
+
+/* ===== Header ===== */
+
+header{
+background:#1e1e2f;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+/* ===== Navigation ===== */
+
+nav{
+background:#333;
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+nav a{
+color:white;
+padding:15px;
+cursor:pointer;
+}
+
+nav a:hover{
+background:#555;
+}
+
+/* ===== Layout ===== */
+
+.container{
+display:flex;
+flex-wrap:wrap;
+width:95%;
+margin:auto;
+}
+
+.posts{
+flex:3;
+padding:20px;
+}
+
+.post{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.dark .post{
+background:#1e1e1e;
+}
+
+/* ===== Sidebar ===== */
+
+.sidebar{
+flex:1;
+background:white;
+padding:20px;
+margin:20px;
+border-radius:8px;
+}
+
+.dark .sidebar{
+background:#1e1e1e;
+}
+<h3>أخبار الكريبتو</h3>
+<div id="cryptoNews"></div>
+/* ===== Admin Panel ===== */
+
+.admin{
+background:white;
+padding:20px;
+margin:20px;
+border-radius:8px;
+display:none;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:10px;
+}
+
+button{
+padding:8px 12px;
+margin-top:10px;
+border:none;
+background:#007BFF;
+color:white;
+cursor:pointer;
+}
+
+/* ===== Footer ===== */
+
+footer{
+background:#222;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:20px;
+}
+
+/* ===== Back to top ===== */
+
+#topBtn{
+position:fixed;
+bottom:20px;
+left:20px;
+padding:10px;
+background:#007BFF;
+color:white;
+border:none;
+display:none;
+}
+
+/* ===== Responsive ===== */
+
+@media(max-width:768px){
+
+.container{
+flex-direction:column;
+}
+
+.sidebar{
+margin:0 20px 20px 20px;
+}
+
+}
+
+</style>
 </head>
-<body class="bg-light text-center p-4">
-  <h1 class="text-success mb-4">📦 قائمة المونة</h1>
+<meta name="description" content="مدونة تقنية عن الذكاء الاصطناعي والتكنولوجيا والبرمجة">
 
-  <!-- إدخال عنصر جديد -->
-  <div class="input-group mb-3 w-50 mx-auto">
-    <input type="text" id="itemInput" class="form-control" placeholder="أضف عنصر جديد">
-    <input type="number" id="qtyInput" class="form-control" placeholder="الكمية" min="1" value="1">
-    <select id="categoryInput" class="form-select">
-      <option value="مواد أساسية">مواد أساسية</option>
-      <option value="خضر">خضر</option>
-      <option value="لحوم">لحوم</option>
-      <option value="مشروبات">مشروبات</option>
-    </select>
-    <button class="btn btn-success" onclick="addItem()">➕ إضافة</button>
-  </div>
+<meta name="keywords" content="AI, التكنولوجيا, البرمجة, الذكاء الاصطناعي, crypto">
 
-  <!-- القائمة -->
-  <ul id="itemList" class="list-group w-50 mx-auto mb-3"></ul>
+<meta name="author" content="Youness">
 
-  <!-- أزرار التصدير والمشاركة -->
-  <button class="btn btn-primary me-2" onclick="exportPDF()">📄 تصدير إلى PDF</button>
-  <button class="btn btn-warning me-2" onclick="exportCSV()">📊 تصدير إلى Excel (CSV)</button>
-  <button class="btn btn-info" onclick="shareEmail()">📧 مشاركة عبر البريد الإلكتروني</button>
+<meta property="og:title" content="مدونة التكنولوجيا">
 
-  <script>
-    // تحميل القائمة من التخزين المحلي
-    function loadItems() {
-      const saved = JSON.parse(localStorage.getItem("mounaList")) || [
-        {name:"سكر", qty:1, category:"مواد أساسية"},
-        {name:"زيت", qty:1, category:"مواد أساسية"},
-        {name:"دقيق", qty:2, category:"مواد أساسية"},
-        {name:"أرز", qty:1, category:"مواد أساسية"},
-        {name:"شاي", qty:1, category:"مشروبات"},
-        {name:"حليب", qty:2, category:"مشروبات"}
-      ];
-      const list = document.getElementById("itemList");
-      list.innerHTML = "";
-      saved.forEach(item => {
-        const li = document.createElement("li");
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
-        li.innerHTML = `${item.name} - ${item.qty} (${item.category})
-          <button class="btn btn-sm btn-danger" onclick="removeItem('${item.name}')">🗑 حذف</button>`;
-        list.appendChild(li);
-      });
-    }
+<meta property="og:description" content="أفضل المقالات عن التقنية والذكاء الاصطناعي">
 
-    // إضافة عنصر جديد
-    function addItem() {
-      const name = document.getElementById("itemInput").value.trim();
-      const qty = parseInt(document.getElementById("qtyInput").value);
-      const category = document.getElementById("categoryInput").value;
-      if(name !== "" && qty > 0) {
-        const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-        saved.push({name, qty, category});
-        localStorage.setItem("mounaList", JSON.stringify(saved));
-        document.getElementById("itemInput").value = "";
-        document.getElementById("qtyInput").value = 1;
-        loadItems();
-      }
-    }
+<meta property="og:type" content="website">
+<body>
 
-    // حذف عنصر
-    function removeItem(name) {
-      let saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-      saved = saved.filter(i => i.name !== name);
-      localStorage.setItem("mounaList", JSON.stringify(saved));
-      loadItems();
-    }
+<header>
 
-    // تصدير إلى PDF
-    function exportPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.setFont("helvetica", "bold");
-      doc.text("📦 قائمة المونة", 10, 10);
+<h1>مدونتي التقنية</h1>
+<p>مقالات عن البرمجة والتكنولوجيا</p>
 
-      const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-      let y = 20;
-      saved.forEach(item => {
-        doc.text(`${item.name} - ${item.qty} (${item.category})`, 10, y);
-        y += 10;
-      });
+</header>
 
-      doc.save("mouna-list.pdf");
-    }
+<nav>
 
-    // تصدير إلى CSV (Excel)
-    function exportCSV() {
-      const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-      let csvContent = "اسم العنصر,الكمية,التصنيف\n";
-      saved.forEach(item => {
-        csvContent += `${item.name},${item.qty},${item.category}\n`;
-      });
+<a onclick="home()">الرئيسية</a>
+<a onclick="toggleDark()">الوضع الليلي</a>
+<a onclick="login()">Admin</a>
 
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "mouna-list.csv";
-      link.click();
-    }
+</nav>
 
-    // مشاركة عبر البريد الإلكتروني
-    function shareEmail() {
-      const saved = JSON.parse(localStorage.getItem("mounaList")) || [];
-      let emailBody = "📦 قائمة المونة:\n\n";
-      saved.forEach(item => {
-        emailBody += `${item.name} - ${item.qty} (${item.category})\n`;
-      });
+<div class="container">
 
-      const subject = "قائمة المونة";
-      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-      window.location.href = mailtoLink;
-    }
+<div class="posts" id="posts"></div>
 
-    // تحميل القائمة عند فتح الصفحة
-    window.onload = loadItems;
-  </script>
+<div class="sidebar">
+
+<h3>بحث</h3>
+<input id="search" placeholder="ابحث عن مقال">
+
+<p>مدونة تجريبية مبنية بـ HTML و JavaScript.</p>
+
+</div>
+
+</div>
+
+<div class="admin" id="admin">
+
+<h3>إضافة مقال جديد</h3>
+
+<input id="title" placeholder="عنوان المقال">
+
+<textarea id="content" placeholder="المحتوى"></textarea>
+
+<input id="image" placeholder="رابط الصورة">
+
+<button onclick="addPost()">نشر</button>
+
+</div>
+
+<footer>
+
+© 2026 جميع الحقوق محفوظة
+
+</footer>
+
+<button id="topBtn">⬆</button>
+
+<script>
+function generateSEO(title){
+
+document.title = title;
+
+let meta = document.querySelector("meta[name='description']");
+
+meta.setAttribute(
+"content",
+title + " مقال تقني عن الذكاء الاصطناعي والتكنولوجيا"
+);
+
+}async function loadCryptoNews(){
+
+let res = await fetch("https://cryptopanic.com/api/v1/posts/?auth_token=demo");
+
+let data = await res.json();
+
+let container = document.getElementById("cryptoNews");
+
+data.results.slice(0,5).forEach(news=>{
+
+container.innerHTML += `
+<p>
+<a href="${news.url}" target="_blank">
+${news.title}
+</a>
+</p>
+`;
+
+});
+
+}
+
+loadCryptoNews();
+/* ===== JSON للمقالات ===== */
+
+let posts = JSON.parse(localStorage.getItem("posts")) || [
+
+{
+title:"تعلم HTML",
+content:"HTML هي لغة بناء صفحات الويب.",
+image:"https://picsum.photos/800/400?1",
+date:"2026"
+},
+
+{
+title:"تعلم CSS",
+content:"CSS تستخدم لتنسيق وتصميم المواقع.",
+image:"https://picsum.photos/800/400?2",
+date:"2026"
+}
+
+];
+
+
+/* ===== عرض المقالات ===== */
+
+function render(list){
+
+let container=document.getElementById("posts");
+
+container.innerHTML="";
+
+list.forEach((p,i)=>{
+
+container.innerHTML+=`
+
+<div class="post">
+
+<h2>${p.title}</h2>
+
+<img src="${p.image}" width="100%">
+
+<p>${p.content}</p>
+
+<small>${p.date}</small>
+
+<div id="comments-${i}"></div>
+
+<input id="c-${i}" placeholder="تعليق">
+
+<button onclick="comment(${i})">إرسال</button>
+
+<button onclick="deletePost(${i})">حذف</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* ===== إضافة مقال ===== */
+
+function addPost(){
+
+let title=document.getElementById("title").value;
+
+let content=document.getElementById("content").value;
+
+let image=document.getElementById("image").value;
+
+posts.unshift({
+
+title,
+content,
+image,
+date:new Date().toLocaleDateString()
+
+});
+
+localStorage.setItem("posts",JSON.stringify(posts));
+
+render(posts);
+
+}
+
+
+/* ===== حذف مقال ===== */
+
+function deletePost(i){
+
+posts.splice(i,1);
+
+localStorage.setItem("posts",JSON.stringify(posts));
+
+render(posts);
+
+}
+
+
+/* ===== تعليقات ===== */
+
+function comment(i){
+
+let input=document.getElementById("c-"+i);
+
+let text=input.value;
+
+if(text==="") return;
+
+let box=document.getElementById("comments-"+i);
+
+let div=document.createElement("div");
+
+div.innerText=text;
+
+box.appendChild(div);
+
+input.value="";
+
+}
+
+
+/* ===== البحث ===== */
+
+document.getElementById("search").addEventListener("input",function(){
+
+let word=this.value.toLowerCase();
+
+let filtered=posts.filter(p=>p.title.toLowerCase().includes(word));
+
+render(filtered);
+
+});
+
+
+/* ===== تسجيل دخول Admin ===== */
+
+function login(){
+
+let pass=prompt("كلمة المرور");
+
+if(pass==="1234"){
+
+document.getElementById("admin").style.display="block";
+
+}
+
+}
+
+
+/* ===== الوضع الليلي ===== */
+
+function toggleDark(){
+
+document.body.classList.toggle("dark");
+
+}
+
+
+/* ===== زر العودة للأعلى ===== */
+
+let btn=document.getElementById("topBtn");
+
+window.onscroll=function(){
+
+if(document.documentElement.scrollTop>200){
+
+btn.style.display="block";
+
+}else{
+
+btn.style.display="none";
+
+}
+
+};
+
+btn.onclick=function(){
+
+window.scrollTo({top:0,behavior:"smooth"});
+
+};
+
+
+render(posts);
+
+</script>
+
 </body>
 </html>
