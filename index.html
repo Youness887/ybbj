@@ -102,6 +102,16 @@
     #darkModeBtn:hover {
       background: #555;
     }
+    #lessonContent {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+    body.dark #lessonContent {
+      background: #1e1e1e;
+      color: #e0e0e0;
+    }
   </style>
 </head>
 <body>
@@ -124,6 +134,7 @@
   <section id="education">
     <h2>دروس تعليمية</h2>
     <div id="lessons"></div>
+    <div id="lessonContent">اختر درسًا لعرض محتواه هنا.</div>
   </section>
 
   <!-- قسم الأخبار -->
@@ -135,7 +146,6 @@
   <!-- قسم الفيديوهات -->
   <section id="videos">
     <h2>فيديوهات حديثة</h2>
-    <!-- Playlist مثال -->
     <iframe src="https://www.youtube.com/embed/videoseries?list=PLoROMvodv4rO8k6jv8bqfQz6jQ0v7kG2z" allowfullscreen></iframe>
     
     <div class="links">
@@ -159,23 +169,45 @@
     // بيانات JSON للتعليم والتواصل
     const siteData = {
       "lessons": [
-        { "title": "مقدمة في HTML", "description": "تعلم أساسيات بناء صفحات الويب." },
-        { "title": "CSS للمبتدئين", "description": "كيفية تنسيق الصفحات وإضافة الألوان." },
-        { "title": "JavaScript عملي", "description": "إضافة التفاعل إلى موقعك." }
+        { 
+          "title": "مقدمة في HTML", 
+          "description": "تعلم أساسيات بناء صفحات الويب.", 
+          "content": "<p>HTML هي لغة بناء صفحات الويب. تبدأ بوسوم مثل <code>&lt;html&gt;</code> و <code>&lt;body&gt;</code>. مثال: <br><code>&lt;h1&gt;مرحبا بالعالم&lt;/h1&gt;</code></p>"
+        },
+        { 
+          "title": "CSS للمبتدئين", 
+          "description": "كيفية تنسيق الصفحات وإضافة الألوان.", 
+          "content": "<p>CSS تضيف الألوان والخطوط. مثال: <br><code>body { background: lightblue; }</code></p>"
+        },
+        { 
+          "title": "JavaScript عملي", 
+          "description": "إضافة التفاعل إلى موقعك.", 
+          "content": "<p>JavaScript يجعل الموقع تفاعلي. مثال: <br><code>alert('مرحبا!');</code></p>"
+        }
       ],
       "contact": {
         "email": "info@tech-arabic.com"
       }
     };
 
-    // عرض الدروس
+    // عرض الدروس كبطاقات
     const lessonsContainer = document.getElementById('lessons');
     siteData.lessons.forEach(lesson => {
       const card = document.createElement('div');
       card.className = 'card';
-      card.innerHTML = `<h3>${lesson.title}</h3><p>${lesson.description}</p>`;
+      card.innerHTML = `
+        <h3>${lesson.title}</h3>
+        <p>${lesson.description}</p>
+        <button onclick="showLesson('${lesson.title}')">عرض الدرس</button>
+      `;
       lessonsContainer.appendChild(card);
     });
+
+    // دالة لعرض محتوى الدرس داخل الصفحة
+    function showLesson(title) {
+      const lesson = siteData.lessons.find(l => l.title === title);
+      document.getElementById('lessonContent').innerHTML = lesson.content;
+    }
 
     // البريد الإلكتروني
     document.getElementById('email').textContent = siteData.contact.email;
