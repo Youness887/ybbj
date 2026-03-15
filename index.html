@@ -10,6 +10,11 @@
       margin: 0;
       padding: 0;
       direction: rtl;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
     }
     header {
       background: #0078d7;
@@ -21,12 +26,15 @@
       background: #005a9e;
       padding: 10px;
       text-align: center;
+      position: sticky;
+      top: 0;
     }
     nav a {
       color: white;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
+      cursor: pointer;
     }
     nav a:hover {
       text-decoration: underline;
@@ -41,9 +49,18 @@
       padding: 15px;
       margin: 10px 0;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark .card {
+      background: #1e1e1e;
+      color: #e0e0e0;
+      border-color: #333;
     }
     h2 {
       color: #333;
+    }
+    body.dark h2 {
+      color: #e0e0e0;
     }
     iframe {
       width: 100%;
@@ -58,6 +75,33 @@
       padding: 15px;
       margin-top: 20px;
     }
+    .links {
+      margin-top: 15px;
+    }
+    .links a {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 15px;
+      background: #0078d7;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .links a:hover {
+      background: #005a9e;
+    }
+    #darkModeBtn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #darkModeBtn:hover {
+      background: #555;
+    }
   </style>
 </head>
 <body>
@@ -65,6 +109,7 @@
   <header>
     <h1>منصة Tech بالعربي</h1>
     <p>تعليم البرمجة + أخبار التكنولوجيا + فيديوهات</p>
+    <button id="darkModeBtn">تفعيل الوضع الليلي</button>
   </header>
 
   <!-- قائمة التنقل -->
@@ -90,11 +135,13 @@
   <!-- قسم الفيديوهات -->
   <section id="videos">
     <h2>فيديوهات حديثة</h2>
-    <iframe src="https://www.youtube.com/embed/<iframe width="560" height="315" src="https://www.youtube.com/embed/<iframe width="560" height="315" frameborder="0" allowfullscreen></iframe>" allowfullscreen></iframe>
-    <iframe src="https://www.youtube.com/embed/<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
-https://www.youtube.com/@techinsider
-<a href="https://www.youtube.com/@coldfusion" target="_blank">شاهد المزيد على يوتيوب</a>
-<a href="https://www.youtube.com/@tedtechnology" target="_blank">شاهد المزيد على يوتيوب</a> allowfullscreen></iframe>
+    <!-- Playlist مثال -->
+    <iframe src="https://www.youtube.com/embed/videoseries?list=PLoROMvodv4rO8k6jv8bqfQz6jQ0v7kG2z" allowfullscreen></iframe>
+    
+    <div class="links">
+      <a href="https://www.youtube.com/@TEDTechnology" target="_blank">قناة TED Technology</a>
+      <a href="https://www.youtube.com/@AIExplained" target="_blank">قناة AI Explained</a>
+    </div>
   </section>
 
   <!-- قسم التواصل -->
@@ -133,11 +180,11 @@ https://www.youtube.com/@techinsider
     // البريد الإلكتروني
     document.getElementById('email').textContent = siteData.contact.email;
 
-    // جلب الأخبار من API
+    // جلب الأخبار من NewsAPI.org
     async function loadNews() {
       try {
-        const apiKey = "5eaf21fc987746e0bcd619b8a7b9f230"; // ضع مفتاح API هنا
-        const url = `https://gnews.io/api/v4/search?q=technology&lang=ar&token=${apiKey}`;
+        const apiKey = "5eaf21fc987746e0bcd619b8a7b9f230"; // ضع مفتاح NewsAPI هنا
+        const url = `https://newsapi.org/v2/everything?q=technology&language=ar&apiKey=${apiKey}`;
 
         const response = await fetch(url);
         const data = await response.json();
@@ -162,6 +209,15 @@ https://www.youtube.com/@techinsider
     }
 
     loadNews();
+
+    // زر الوضع الليلي
+    const darkModeBtn = document.getElementById('darkModeBtn');
+    darkModeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      darkModeBtn.textContent = document.body.classList.contains('dark') 
+        ? "تفعيل الوضع الفاتح" 
+        : "تفعيل الوضع الليلي";
+    });
   </script>
 </body>
 </html>
