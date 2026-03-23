@@ -1,255 +1,225 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html dir="rtl" lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>منصة Tech بالعربي</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
-      direction: rtl;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark {
-      background: #121212;
-      color: #e0e0e0;
-    }
-    header {
-      background: #0078d7;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      background: #005a9e;
-      padding: 10px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    section {
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 15px;
-      margin: 10px 0;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark .card {
-      background: #1e1e1e;
-      color: #e0e0e0;
-      border-color: #333;
-    }
-    h2 {
-      color: #333;
-    }
-    body.dark h2 {
-      color: #e0e0e0;
-    }
-    iframe {
-      width: 100%;
-      height: 315px;
-      margin-top: 10px;
-      border: none;
-    }
-    footer {
-      background: #0078d7;
-      color: white;
-      text-align: center;
-      padding: 15px;
-      margin-top: 20px;
-    }
-    .links {
-      margin-top: 15px;
-    }
-    .links a {
-      display: inline-block;
-      margin: 5px;
-      padding: 10px 15px;
-      background: #0078d7;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .links a:hover {
-      background: #005a9e;
-    }
-    #darkModeBtn {
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: #333;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #darkModeBtn:hover {
-      background: #555;
-    }
-    #lessonContent {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f0f0f0;
-      border-radius: 5px;
-    }
-    body.dark #lessonContent {
-      background: #1e1e1e;
-      color: #e0e0e0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Pro - مولد محتوى AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans Arabic', sans-serif; }
+        .telegram-blue { background: linear-gradient(135deg, #229ED9, #1E88E5); }
+    </style>
 </head>
-<body>
-  <!-- رأس الموقع -->
-  <header>
-    <h1>منصة Tech بالعربي</h1>
-    <p>تعليم البرمجة + أخبار التكنولوجيا + فيديوهات</p>
-    <button id="darkModeBtn">تفعيل الوضع الليلي</button>
-  </header>
+<body class="bg-zinc-950 text-white min-h-screen">
+    <div class="max-w-md mx-auto bg-zinc-900 min-h-screen shadow-2xl overflow-hidden">
+        
+        <!-- Header -->
+        <div class="telegram-blue p-6 text-center">
+            <h1 class="text-3xl font-bold">🤖 AI Content Pro</h1>
+            <p class="text-sm mt-1 opacity-90">مولد محتوى AI بالعربية • مدعوم بـ Telegram Stars</p>
+        </div>
 
-  <!-- قائمة التنقل -->
-  <nav>
-    <a href="#education">التعليم</a>
-    <a href="#news">الأخبار</a>
-    <a href="#videos">المرئيات</a>
-    <a href="#contact">اتصل بنا</a>
-  </nav>
+        <!-- User Info -->
+        <div id="user-info" class="px-6 py-4 bg-zinc-800 flex items-center gap-4 border-b border-zinc-700">
+            <div class="w-12 h-12 bg-zinc-700 rounded-full flex items-center justify-center text-2xl">👤</div>
+            <div>
+                <p class="font-semibold" id="username">مرحباً</p>
+                <p class="text-xs text-zinc-400" id="user-id"></p>
+            </div>
+        </div>
 
-  <!-- قسم التعليم -->
-  <section id="education">
-    <h2>دروس تعليمية</h2>
-    <div id="lessons"></div>
-    <div id="lessonContent">اختر درسًا لعرض محتواه هنا.</div>
-  </section>
+        <!-- Tabs -->
+        <div class="flex border-b border-zinc-700">
+            <button onclick="showTab(0)" class="tab-button flex-1 py-4 font-medium border-b-2 border-blue-500 text-blue-400" id="tab-0">المولد</button>
+            <button onclick="showTab(1)" class="tab-button flex-1 py-4 font-medium text-zinc-400" id="tab-1">المتجر</button>
+        </div>
 
-  <!-- قسم الأخبار -->
-  <section id="news">
-    <h2>آخر الأخبار التقنية</h2>
-    <div id="newsList">جاري تحميل الأخبار...</div>
-  </section>
+        <!-- Tab 1: Generator -->
+        <div id="tab-content-0" class="p-6">
+            <div class="mb-6">
+                <label class="block text-sm mb-2 text-zinc-400">اكتب الموضوع</label>
+                <input id="topic" type="text" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-lg focus:outline-none focus:border-blue-500" placeholder="مثال: كيفية الربح من تليجرام في 2026" value="كيفية الربح من تليجرام">
+            </div>
+            
+            <button onclick="generateContent()" 
+                    class="w-full telegram-blue hover:brightness-110 py-5 rounded-3xl font-bold text-xl flex items-center justify-center gap-3 shadow-lg">
+                <span>✨ توليد المحتوى</span>
+            </button>
 
-  <!-- قسم الفيديوهات -->
-  <section id="videos">
-    <h2>فيديوهات حديثة</h2>
-    <iframe src="https://www.youtube.com/embed/videoseries?list=PLoROMvodv4rO8k6jv8bqfQz6jQ0v7kG2z" allowfullscreen></iframe>
-    
-    <div class="links">
-      <a href="https://www.youtube.com/@TEDTechnology" target="_blank">قناة TED Technology</a>
-      <a href="https://www.youtube.com/@AIExplained" target="_blank">قناة AI Explained</a>
+            <div id="result" class="mt-8 bg-zinc-800 rounded-3xl p-6 hidden">
+                <h3 class="font-bold text-lg mb-4">📝 المحتوى المولد:</h3>
+                <div id="content-text" class="text-zinc-300 leading-relaxed whitespace-pre-wrap"></div>
+                
+                <div id="premium-actions" class="hidden mt-6 pt-6 border-t border-zinc-700">
+                    <button onclick="downloadPDF()" 
+                            class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold flex items-center justify-center gap-3">
+                        ⬇️ تحميل كـ PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Shop -->
+        <div id="tab-content-1" class="p-6 hidden">
+            <div class="bg-zinc-800 rounded-3xl p-8 text-center">
+                <div class="text-6xl mb-6">⭐</div>
+                <h2 class="text-2xl font-bold mb-2">اشتراك Premium</h2>
+                <p class="text-zinc-400 mb-8">499 Stars شهرياً<br>محتوى غير محدود + تحميل PDF + أولوية</p>
+                
+                <button onclick="buyPremium()" 
+                        class="w-full telegram-blue py-6 rounded-3xl text-2xl font-bold shadow-xl">
+                    اشترك الآن - 499 ⭐
+                </button>
+                
+                <p class="text-xs text-zinc-500 mt-8">الدفع آمن عبر Telegram Stars • يتم خصمها فوراً</p>
+            </div>
+            
+            <div class="mt-10 text-center">
+                <p id="premium-status" class="text-emerald-400 font-medium"></p>
+            </div>
+        </div>
     </div>
-  </section>
 
-  <!-- قسم التواصل -->
-  <section id="contact">
-    <h2>اتصل بنا</h2>
-    <p>البريد الإلكتروني: <span id="email"></span></p>
-  </section>
+    <script>
+        // ==================== Telegram WebApp Initialization ====================
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        tg.setHeaderColor("#18181b");
+        tg.setBackgroundColor("#09090b");
 
-  <!-- تذييل -->
-  <footer>
-    <p>&copy; 2026 Tech بالعربي</p>
-  </footer>
-
-  <script>
-    // بيانات JSON للتعليم والتواصل
-    const siteData = {
-      "lessons": [
-        { 
-          "title": "مقدمة في HTML", 
-          "description": "تعلم أساسيات بناء صفحات الويب.", 
-          "content": "<p>HTML هي لغة بناء صفحات الويب. تبدأ بوسوم مثل <code>&lt;html&gt;</code> و <code>&lt;body&gt;</code>. مثال: <br><code>&lt;h1&gt;مرحبا بالعالم&lt;/h1&gt;</code></p>"
-        },
-        { 
-          "title": "CSS للمبتدئين", 
-          "description": "كيفية تنسيق الصفحات وإضافة الألوان.", 
-          "content": "<p>CSS تضيف الألوان والخطوط. مثال: <br><code>body { background: lightblue; }</code></p>"
-        },
-        { 
-          "title": "JavaScript عملي", 
-          "description": "إضافة التفاعل إلى موقعك.", 
-          "content": "<p>JavaScript يجعل الموقع تفاعلي. مثال: <br><code>alert('مرحبا!');</code></p>"
+        // Get user info
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById("username").textContent = `مرحباً ${user.first_name}`;
+            document.getElementById("user-id").textContent = `@${user.username || 'مستخدم'} • ID: ${user.id}`;
         }
-      ],
-      "contact": {
-        "email": "info@tech-arabic.com"
-      }
-    };
 
-    // عرض الدروس كبطاقات
-    const lessonsContainer = document.getElementById('lessons');
-    siteData.lessons.forEach(lesson => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <h3>${lesson.title}</h3>
-        <p>${lesson.description}</p>
-        <button onclick="showLesson('${lesson.title}')">عرض الدرس</button>
-      `;
-      lessonsContainer.appendChild(card);
-    });
+        // Tailwind script
+        function initTailwind() {
+            // Already initialized via CDN
+        }
 
-    // دالة لعرض محتوى الدرس داخل الصفحة
-    function showLesson(title) {
-      const lesson = siteData.lessons.find(l => l.title === title);
-      document.getElementById('lessonContent').innerHTML = lesson.content;
-    }
+        // ==================== State ====================
+        let isPremium = false;
 
-    // البريد الإلكتروني
-    document.getElementById('email').textContent = siteData.contact.email;
+        // ==================== Tabs ====================
+        function showTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('border-b-2', 'border-blue-500', 'text-blue-400'));
+            document.getElementById(`tab-${tab}`).classList.add('border-b-2', 'border-blue-500', 'text-blue-400');
+            
+            document.getElementById('tab-content-0').classList.add('hidden');
+            document.getElementById('tab-content-1').classList.add('hidden');
+            document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+        }
 
-    // جلب الأخبار من NewsAPI.org
-    async function loadNews() {
-      try {
-        const apiKey = "5eaf21fc987746e0bcd619b8a7b9f230"; // ضع مفتاح NewsAPI هنا
-        const url = `https://newsapi.org/v2/everything?q=technology&language=ar&apiKey=${apiKey}`;
+        // ==================== Mock AI Generator ====================
+        function generateContent() {
+            const topic = document.getElementById("topic").value || "الربح من تليجرام";
+            const resultDiv = document.getElementById("result");
+            const contentDiv = document.getElementById("content-text");
+            
+            // Mock Arabic content
+            const mockContents = [
+                `مقالة احترافية عن ${topic}:\n\n1. مقدمة قوية\n2. 5 طرق مضمونة للربح\n3. أمثلة حقيقية من 2026\n4. نصائح ذهبية\n\nهل تريد نسخة أطول؟ اشترك Premium!`,
+                `محتوى AI مخصص:\n\n${topic} أصبح من أقوى مصادر الدخل في 2026. ابدأ بـ Mini Apps وTelegram Stars...`,
+                `دليل شامل:\n\n- خطوة 1: أنشئ بوت\n- خطوة 2: اربط Vercel\n- خطوة 3: فعّل Stars\n\nالنتيجة: دخل سلبي يومي!`
+            ];
+            
+            const randomContent = mockContents[Math.floor(Math.random() * mockContents.length)];
+            contentDiv.textContent = randomContent;
+            resultDiv.classList.remove('hidden');
+            
+            // Show premium actions if subscribed
+            document.getElementById("premium-actions").classList.toggle('hidden', !isPremium);
+        }
 
-        const response = await fetch(url);
-        const data = await response.json();
+        // ==================== Download PDF (mock) ====================
+        function downloadPDF() {
+            const content = document.getElementById("content-text").textContent;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ai-content-pro.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+            tg.showAlert("✅ تم تحميل الملف بنجاح!");
+        }
 
-        const newsContainer = document.getElementById('newsList');
-        newsContainer.innerHTML = "";
+        // ==================== Premium Purchase ====================
+        function buyPremium() {
+            tg.showPopup({
+                title: "تأكيد الاشتراك",
+                message: "سيتم خصم 499 Stars من رصيدك.\nهل أنت متأكد؟",
+                buttons: [
+                    { id: "cancel", type: "cancel" },
+                    { id: "pay", type: "ok", text: "ادفع الآن" }
+                ]
+            }, function(buttonId) {
+                if (buttonId === "pay") {
+                    // =============== REAL PAYMENT CODE (جاهز للإنتاج) ===============
+                    // 1. أنشئ رابط فاتورة باستخدام Bot API (مرة واحدة أو عبر backend)
+                    // مثال رابط جاهز (استبدله برابطك الحقيقي):
+                    const invoiceLink = "https://t.me/yourbot?start=invoice_499"; // ← استبدل هذا
+                    
+                    // إذا كان لديك رابط حقيقي:
+                    if (invoiceLink && invoiceLink.includes("t.me")) {
+                        tg.openInvoice(invoiceLink);
+                    } else {
+                        // محاكاة سريعة للتجربة الفورية
+                        simulatePaymentSuccess();
+                    }
+                }
+            });
+        }
 
-        data.articles.forEach(article => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <h3>${article.title}</h3>
-            <p>${article.description || "بدون وصف"}</p>
-            <a href="${article.url}" target="_blank">اقرأ المزيد</a>
-          `;
-          newsContainer.appendChild(card);
+        function simulatePaymentSuccess() {
+            const loading = document.createElement("div");
+            loading.innerHTML = `<div class="fixed inset-0 bg-black/80 flex items-center justify-center z-50"><div class="text-center"><div class="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div><p class="text-white">جاري معالجة الدفع...</p></div></div>`;
+            document.body.appendChild(loading);
+
+            setTimeout(() => {
+                loading.remove();
+                isPremium = true;
+                document.getElementById("premium-status").innerHTML = `✅ أنت الآن Premium!<br>استمتع بالمحتوى غير المحدود`;
+                tg.showAlert("🎉 تهانينا! تم تفعيل الاشتراك Premium");
+                
+                // إذا كان هناك محتوى مولد، أظهر زر التحميل
+                if (!document.getElementById("result").classList.contains('hidden')) {
+                    document.getElementById("premium-actions").classList.remove('hidden');
+                }
+            }, 1500);
+        }
+
+        // ==================== Listen to Payment Events (يعمل تلقائياً مع الرابط الحقيقي) ====================
+        tg.onEvent('invoiceClosed', function(event) {
+            if (event.status === 'paid') {
+                isPremium = true;
+                document.getElementById("premium-status").innerHTML = `✅ تم الدفع بنجاح!<br>اشتراك Premium مفعّل`;
+                tg.showAlert("🎉 شكراً لك! تم تفعيل الاشتراك");
+            } else if (event.status === 'cancelled') {
+                tg.showAlert("تم إلغاء الدفع");
+            }
         });
-      } catch (error) {
-        document.getElementById('newsList').textContent = "تعذر تحميل الأخبار.";
-        console.error("خطأ في جلب الأخبار:", error);
-      }
-    }
 
-    loadNews();
+        // ==================== Main Button (اختياري - يظهر في أعلى الشاشة) ====================
+        tg.MainButton.setText("توليد محتوى جديد");
+        tg.MainButton.show();
+        tg.MainButton.onClick(() => {
+            showTab(0);
+            generateContent();
+        });
 
-    // زر الوضع الليلي
-    const darkModeBtn = document.getElementById('darkModeBtn');
-    darkModeBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      darkModeBtn.textContent = document.body.classList.contains('dark') 
-        ? "تفعيل الوضع الفاتح" 
-        : "تفعيل الوضع الليلي";
-    });
-  </script>
+        // Init
+        initTailwind();
+        showTab(0);
+        
+        // Bonus: إظهار نصيحة أول مرة
+        setTimeout(() => {
+            tg.showAlert("👋 مرحباً! جرب توليد محتوى ثم اشترك Premium لتحميل PDF");
+        }, 800);
+    </script>
 </body>
 </html>
