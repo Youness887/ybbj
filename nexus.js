@@ -152,6 +152,9 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+
+    <!-- Vercel Web Analytics -->
+    <script type="module" src="js/vercel-analytics.js"></script>
 </body>
 </html>
 
