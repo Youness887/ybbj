@@ -1,0 +1,8 @@
+export function recommendProducts(
+  viewedCategories: string[],
+  products: any[]
+) {
+  return products.filter(
+    p => viewedCategories.includes(p.category)
+  );
+}
