@@ -1,48 +1,266 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة تحكم بوت التسويق</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarnBot TG - Make Money on Telegram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input, textarea, button { width: 100%; margin: 10px 0; padding: 12px; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { background: #0088cc; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background: #006699; }
-        .status { color: green; font-weight: bold; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%); }
+        .money-glow { text-shadow: 0 0 25px rgb(34 211 238); }
+        .card-hover:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -15px rgb(0 0 0 / 0.5); }
     </style>
 </head>
-<body>
+<body class="bg-zinc-950 text-white">
 
-<div class="container">
-    <h2>🚀 بوت إعلانات الـ Referral</h2>
-    <p>أدخل بيانات الإعلان لإرساله لجميع المشتركين</p>
-    
-    <input type="text" id="botToken" placeholder="Telegram Bot Token">
-    <textarea id="adMessage" rows="5" placeholder="اكتب نص الإعلان هنا (مع روابط التسويق بالعمولة)"></textarea>
-    <button onclick="sendAds()">نشر الإعلان الآن</button>
-    
-    <div id="status" class="status"></div>
-</div>
+    <!-- === SCAM DISCLAIMER BANNER === -->
+    <div class="bg-red-600 text-white py-3 text-center text-sm font-medium border-b-2 border-red-700">
+        ⚠️ <strong>IMPORTANT WARNING:</strong> This is a <strong>DEMO / EDUCATIONAL WEBSITE ONLY</strong>. 
+        It does NOT represent a real money-making service. Most Telegram "earn money" bots are scams. 
+        Never send money or personal data. Use at your own risk.
+    </div>
 
-<script>
-    // ملاحظة: هذا الجزء للواجهة فقط، البوت الفعلي سيعمل عبر Vercel API
-    async function sendAds() {
-        const  document.getElementById('adMessage').value;
-        const statusDiv = document.getElementById('status');
+    <!-- Navbar -->
+    <nav class="bg-black/90 backdrop-blur-md border-b border-zinc-800 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-cyan-500 rounded-2xl flex items-center justify-center text-3xl">💰</div>
+                <span class="text-3xl font-bold tracking-tighter">EarnBot<span class="text-cyan-400">TG</span></span>
+            </div>
+            <div class="hidden md:flex gap-8">
+                <a href="#features" class="hover:text-cyan-400 transition">Features</a>
+                <a href="#how" class="hover:text-cyan-400 transition">How it Works</a>
+                <a href="#dashboard" class="hover:text-cyan-400 transition">Demo Dashboard</a>
+                <a href="#referral" class="hover:text-cyan-400 transition">Referrals</a>
+            </div>
+            <button onclick="connectBot()" 
+                    class="bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-6 py-3 rounded-2xl flex items-center gap-2 transition">
+                <i class="fa-brands fa-telegram"></i> Connect Telegram
+            </button>
+        </div>
+    </nav>
 
-        if(!token || !message) {
-            alert("يرجى ملء جميع الحقول");
-            return;
+    <!-- Hero -->
+    <section class="hero-bg pt-28 pb-24">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h1 class="text-6xl md:text-7xl font-bold leading-tight mb-6 money-glow">
+                Earn Money on<br>Telegram <span class="text-cyan-400">Automatically</span>
+            </h1>
+            <p class="text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
+                This is a <strong>demo website</strong> showcasing what a Telegram earning bot could look like.
+            </p>
+            <button onclick="connectBot()" 
+                    class="bg-white text-black text-2xl font-bold px-12 py-6 rounded-3xl hover:scale-105 transition flex items-center gap-4 mx-auto">
+                <i class="fa-solid fa-bolt"></i>
+                LAUNCH DEMO BOT
+            </button>
+        </div>
+    </section>
+
+    <!-- Fake Live Stats -->
+    <div class="bg-black py-8">
+        <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 px-6 text-center">
+            <div>
+                <div id="users" class="text-4xl font-bold text-cyan-400">12,847</div>
+                <div class="text-zinc-400">Active Users</div>
+            </div>
+            <div>
+                <div id="paid" class="text-4xl font-bold text-cyan-400">$387,291</div>
+                <div class="text-zinc-400">Paid This Month</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-cyan-400">4.2s</div>
+                <div class="text-zinc-400">Avg Payout</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-cyan-400">31%</div>
+                <div class="text-zinc-400">Referral Bonus</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section id="features" class="py-20 bg-zinc-950">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-4">How You Can Earn</h2>
+            <p class="text-center text-zinc-400 mb-16">Demo simulation only</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-8 card-hover">
+                    <div class="text-5xl mb-6">📺</div>
+                    <h3 class="text-2xl font-bold mb-3">Auto Ad Watching</h3>
+                    <p class="text-zinc-400">Bot watches short ads automatically and credits you.</p>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-8 card-hover">
+                    <div class="text-5xl mb-6">✅</div>
+                    <h3 class="text-2xl font-bold mb-3">Task Automation</h3>
+                    <p class="text-zinc-400">Join channels, like posts — bot handles most work.</p>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-8 card-hover">
+                    <div class="text-5xl mb-6">👥</div>
+                    <h3 class="text-2xl font-bold mb-3">Referral System</h3>
+                    <p class="text-zinc-400">Earn 30% lifetime commission from friends you invite.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Dashboard -->
+    <section id="dashboard" class="py-20 bg-black">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12">Live Demo Dashboard</h2>
+            
+            <div id="dashboardPanel" class="bg-zinc-900 rounded-3xl p-8 border border-zinc-700 hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <p class="text-zinc-400">Balance</p>
+                        <p id="balance" class="text-5xl font-bold text-cyan-400">$24.85</p>
+                    </div>
+                    <button onclick="claimEarnings()" 
+                            class="bg-emerald-500 hover:bg-emerald-600 px-8 py-3 rounded-2xl font-semibold">
+                        Claim Earnings
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-zinc-800 rounded-2xl p-6">
+                        <p class="text-sm text-zinc-400">Today's Earnings</p>
+                        <p id="today" class="text-3xl font-bold">$3.45</p>
+                    </div>
+                    <div class="bg-zinc-800 rounded-2xl p-6">
+                        <p class="text-sm text-zinc-400">Referrals</p>
+                        <p id="referrals" class="text-3xl font-bold">12</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center text-sm text-zinc-400">
+                    This is a <strong>local simulation</strong> — data is saved only in your browser.
+                </div>
+            </div>
+
+            <div id="connectPrompt" class="text-center py-20">
+                <button onclick="connectBot()" 
+                        class="bg-cyan-500 text-black font-bold text-xl px-12 py-6 rounded-3xl">
+                    Connect Bot to See Demo Dashboard →
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Referral -->
+    <section id="referral" class="py-20 bg-zinc-950">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-6">Referral Program</h2>
+            <p class="text-zinc-400 mb-8">Earn 30% lifetime from every friend you refer</p>
+            
+            <div class="bg-zinc-900 rounded-3xl p-8 max-w-lg mx-auto">
+                <p class="text-sm text-zinc-400 mb-3">YOUR REFERRAL LINK</p>
+                <div id="refLink" class="bg-zinc-800 p-4 rounded-2xl font-mono text-cyan-400 break-all mb-6">
+                    https://t.me/EarnBotTGbot?start=ref_demo123
+                </div>
+                <button onclick="copyLink()" 
+                        class="w-full bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-copy"></i> COPY LINK
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-24 bg-gradient-to-b from-transparent to-black">
+        <div class="max-w-2xl mx-auto text-center px-6">
+            <h2 class="text-5xl font-bold mb-6">Ready to try the demo?</h2>
+            <button onclick="connectBot()" 
+                    class="bg-cyan-500 text-black text-2xl font-bold px-16 py-7 rounded-3xl hover:scale-105 transition">
+                START DEMO NOW
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-sm">
+            <p class="mb-4 font-medium text-red-400">
+                ⚠️ This website is for demonstration and educational purposes only.<br>
+                No real Telegram bot is connected. No real money can be earned.
+            </p>
+            <p>© 2026 EarnBot TG Demo • Single file for GitHub</p>
+        </div>
+    </footer>
+
+    <!-- Telegram Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+        <div class="bg-zinc-900 rounded-3xl max-w-md w-full mx-4 p-8">
+            <div class="flex justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-telegram text-4xl text-cyan-400"></i>
+                    <div class="font-bold text-xl">EarnBotTGbot</div>
+                </div>
+                <button onclick="closeModal()" class="text-4xl text-zinc-400">×</button>
+            </div>
+            
+            <div class="bg-amber-900/30 border border-amber-500 rounded-2xl p-6 mb-8 text-center">
+                <p class="text-amber-400">This is a simulation only</p>
+            </div>
+            
+            <button onclick="startSimulation()" 
+                    class="w-full py-6 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xl rounded-2xl">
+                OPEN IN TELEGRAM (DEMO)
+            </button>
+            
+            <p class="text-center text-xs text-zinc-500 mt-6">No real connection will be made</p>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind already loaded
+
+        let balance = 24.85;
+        let today = 3.45;
+        let referrals = 12;
+
+        function connectBot() {
+            document.getElementById('modal').classList.remove('hidden');
         }
 
-        statusDiv.innerText = "جاري معالجة الإرسال...";
-        
-        // هنا يمكن ربط الواجهة بـ API البوت لإرسال الرسائل
-        alert("تم إرسال الإعلان إلى قائمة الانتظار!");
-        statusDiv.innerText = "تم الإرسال بنجاح ✅";
-    }
-</script>
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
 
+        function startSimulation() {
+            closeModal();
+            document.getElementById('connectPrompt').classList.add('hidden');
+            document.getElementById('dashboardPanel').classList.remove('hidden');
+            
+            alert("✅ Demo Bot Connected!\n\nThis is a local simulation only.\nYou can now play with the fake dashboard.");
+        }
+
+        function claimEarnings() {
+            balance += 2.35;
+            today += 2.35;
+            document.getElementById('balance').textContent = '$' + balance.toFixed(2);
+            document.getElementById('today').textContent = '$' + today.toFixed(2);
+            alert("✅ $2.35 added to your demo balance!");
+        }
+
+        function copyLink() {
+            const link = document.getElementById('refLink').innerText;
+            navigator.clipboard.writeText(link).then(() => {
+                alert("✅ Referral link copied!\n(Only works in this demo)");
+            });
+        }
+
+        // Live counter animation
+        let users = 12847;
+        setInterval(() => {
+            users += Math.floor(Math.random() * 5) + 1;
+            document.getElementById('users').textContent = users.toLocaleString();
+        }, 3000);
+
+        console.log("%cEarnBot TG Demo - index.html ready for GitHub", "color: cyan; font-weight: bold");
+    </script>
 </body>
 </html>
